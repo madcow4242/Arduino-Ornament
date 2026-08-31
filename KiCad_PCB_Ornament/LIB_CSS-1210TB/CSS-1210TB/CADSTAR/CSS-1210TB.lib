@@ -1,0 +1,17 @@
+.CSS-1210TB :1 ;SWITCH SLIDE SPDT 100MA 12V
+CSS1210TB
+*STM S
+*NGS
+*PNM 1=1 2=2 3=3 4=MH1 5=MH2
+*PLB 1="1" 2="2" 3="3" 4="MH1" 5="MH2"
+*MXP 5
+*DFN CSS-1210TB
+~!Mouser Part Number (229-CSS-1210TB)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Nidec-Components/CSS-1210TB?qs=XeJtXLiO41RuZ%252BgY2j5i0A%3D%3D)
+~!Manufacturer_Name (Nidec Copal)
+~!Manufacturer_Part_Number (CSS-1210TB)
+~!Link Datasheet (https://www.nidec-copal-electronics.com/e/catalog/switch/css.pdf)
+~!Height (2.1mm)
+~!3D_Model (CSS-1210TB)
+CSS-1210TB
+1.1!U 2.1!U 3.1!U 4.1!U 5.1!U 

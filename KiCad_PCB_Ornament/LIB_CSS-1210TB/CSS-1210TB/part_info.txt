@@ -1,0 +1,9 @@
+Manufacturer=Nidec Copal
+PartNumber=CSS-1210TB
+PartCategory=Switch
+PackageCategory=Other
+PinCount=5
+Version=2.7
+Released=2018-03-20 14:22:47
+Downloaded=2026-04-12 20:54:56
+3D=Y

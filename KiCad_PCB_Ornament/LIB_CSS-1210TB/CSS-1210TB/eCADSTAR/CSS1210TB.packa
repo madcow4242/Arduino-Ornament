@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "CSS-1210TB"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2020-05-29-10:01:58)
+    (mountForm default
+        (footprintRef "CSS1210TB")
+        (spec "System")
+    )
+)

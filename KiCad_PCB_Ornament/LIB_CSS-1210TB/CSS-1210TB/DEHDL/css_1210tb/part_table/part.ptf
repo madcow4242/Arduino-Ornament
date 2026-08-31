@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'CSS_1210TB'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Nidec Copal", "CSS-1210TB" (!) = "", "CSS1210TB", "Other", "229-CSS-1210TB", "https://www.mouser.co.uk/ProductDetail/Nidec-Components/CSS-1210TB?qs=XeJtXLiO41RuZ%252BgY2j5i0A%3D%3D", "SWITCH SLIDE SPDT 100MA 12V", "https://www.nidec-copal-electronics.com/e/catalog/switch/css.pdf", "2.1 mm"
+END_PART
+
+END.

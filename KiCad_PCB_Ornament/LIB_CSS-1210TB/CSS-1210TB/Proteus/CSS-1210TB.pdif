@@ -1,0 +1,169 @@
+;Proteus Design Interchange Format
+(PDIF
+ (vendor "SamacSys Limited")
+ (version 1 0)
+ (library
+  (part "CSS-1210TB"
+   (description "SWITCH SLIDE SPDT 100MA 12V")
+   (family "SWI")
+   (package "CSS1210TB")
+   (attribute "Datasheet Link" "https://www.nidec-copal-electronics.com/e/catalog/switch/css.pdf")
+   (attribute "Geometry.Height" "2.1mm")
+   (attribute "Mouser Part Number" "229-CSS-1210TB")
+   (attribute "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/Nidec-Components/CSS-1210TB?qs=XeJtXLiO41RuZ%252BgY2j5i0A%3D%3D")
+   (attribute "Manufacturer_Name" "Nidec Copal")
+   (attribute "Manufacturer_Part_Number" "CSS-1210TB")
+   (gate
+    (symbol "CSS-1210TB")
+    (pin "1" 1 PS)
+    (pin "2" 2 PS)
+    (pin "3" 3 PS)
+    (pin "MH1" MH1 PS)
+    (pin "MH2" MH2 PS)
+   )
+  )
+  (symbol "CSS-1210TB"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 200 100) (pt 700 100) (pt 700 -300) (pt 200 -300) (pt 200 100) (closed))
+   )
+   (terminal
+    (body (symbol "PIN") (pt 900 0) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 900 -100) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 900 -200) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 0 0) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 0 -100) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+  )
+  (symbol "PIN"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 200 0))))
+  (symbol "PINSHORT"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 100 0))))
+  (package "CSS1210TB"
+   (units MM)
+   (layer TASM
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed true)
+      (pt -4.425 1.875)
+      (pt 4.425 1.875)
+      (pt 4.425 -1.125)
+      (pt -4.425 -1.125)
+      (pt -4.425 1.875))))
+   (layer OCCA
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed true)
+      (pt -5.425 6.05)
+      (pt 5.425 6.05)
+      (pt 5.425 -4.125)
+      (pt -5.425 -4.125)
+      (pt -5.425 6.05))))
+   (layer TASM
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed false)
+      (pt -1.75 -1.125)
+      (pt -1.75 -3.125)
+      (pt -0.25 -3.125)
+      (pt -0.25 -1.125))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed false)
+      (pt -4 1.875)
+      (pt -4.425 1.875)
+      (pt -4.425 -1.125)
+      (pt -4 -1.125))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed false)
+      (pt 2 1.875)
+      (pt 4.425 1.875)
+      (pt 4.425 -1.125)
+      (pt 4 -1.125))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed false)
+      (pt -2 -1.125)
+      (pt 2 -1.125))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed false)
+      (pt -1.75 -1.125)
+      (pt -1.75 -3.125)
+      (pt -0.25 -3.125)
+      (pt -0.25 -1.125))))
+   (layer TSLK
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed true)
+      (pt -3 5)
+      (arc (pt -3.000 5.000) (pt -3.100 4.950) (pt -3.000 5.050) (start 180.0) (sweep .0))
+      (pt -3.1 5)
+      (arc (pt -3.100 5.000) (pt -3.100 4.950) (pt -3.000 5.050) (start 180.0) (sweep 180.0))
+      (pt -3 5))))
+   (leg 1 (pt -3.000 3.125) (padstack 0))
+   (leg 2 (pt -1.000 3.125) (padstack 0))
+   (leg 3 (pt 1.000 3.125) (padstack 0))
+   (leg MH1 (pt -3.150 -0.625) (padstack 4))
+   (leg MH2 (pt 3.150 -0.625) (padstack 5))
+   (padstack 0
+    (plated false)
+    (pad (layer TCOP) (rectf 1.000 2.500 0 0 90.000))
+   )
+   (padstack 4
+    (hole 0.85)
+    (plated true)
+    (pad (layer TCOP) (round 1.381))
+    (pad (layer INNER) (round 1.381))
+    (pad (layer BCOP) (round 1.381))
+   )
+   (padstack 5
+    (hole 0.85)
+    (plated true)
+    (pad (layer TCOP) (round 1.381))
+    (pad (layer INNER) (round 1.381))
+    (pad (layer BCOP) (round 1.381))
+   )
+   (model "CSS-1210TB.stp"
+    (euler 90 0 0)
+    (offset 0 -0.75 1.0499999523162842)
+   )
+  )
+ )
+)

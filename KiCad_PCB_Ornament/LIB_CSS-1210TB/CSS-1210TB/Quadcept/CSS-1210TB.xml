@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--/559210/2031425/2.50/5/4/Switch/-->
+<quadcept_library>
+  <setting unit="mil" />
+  <textstyle name="Default" height="47.244094488189" strokewidth="7.8740157480315" charwidth="47.244094488189" />
+  <textstyle name="Dimension" height="19.6850393700787" strokewidth="0" charwidth="19.6850393700787" />
+  <textstyle name="H127W0635TH00762" height="50" strokewidth="3" charwidth="25" />
+  <textstyle name="H15W15TH02" height="59.0551181102362" strokewidth="7.8740157480315" charwidth="59.0551181102362" />
+  <padstyle name="r250_100" surface="True" plated="False" isvia="False" nopaste="False" nomask="True" complex="False" holesize="0">
+    <padshape layer="TOP" shape="rectangle" width="39.370078740157" height="98.425196850392" />
+    <padshape layer="TOP_SOLDER_MASK" shape="rectangle" width="47.244094488188" height="106.29921259842" />
+    <padshape layer="TOP_SOLDER_PASTE" shape="rectangle" width="39.370078740157" height="98.425196850392" />
+  </padstyle>
+  <padstyle name="c138.1_h85" surface="False" plated="True" isvia="False" nopaste="True" nomask="True" complex="False" holesize="33.464566929133">
+    <padshape layer="TOP" shape="round" width="54.370078740157" height="54.370078740157" />
+    <padshape layer="TOP_SOLDER_MASK" shape="round" width="62.244094488188" height="62.244094488188" />
+    <padshape layer="INNER" shape="round" width="54.370078740157" height="54.370078740157" />
+    <padshape layer="BOTTOM" shape="round" width="54.370078740157" height="54.370078740157" />
+    <padshape layer="BOTTOM_SOLDER_MASK" shape="round" width="62.244094488188" height="62.244094488188" />
+  </padstyle>
+  <footprint name="CSS1210TB" originx="0" originy="0" pickpointx="0" pickpointy="0">
+    <pcbpin number="1" name="1" style="r250_100" originx="-118.11023622047" originy="123.03149606299" rotation="0" />
+    <pcbpin number="2" name="2" style="r250_100" originx="-39.370078740157" originy="123.03149606299" rotation="0" />
+    <pcbpin number="3" name="3" style="r250_100" originx="39.370078740157" originy="123.03149606299" rotation="0" />
+    <pcbpin number="4" name="MH1" style="c138.1_h85" originx="-124.01574803149" originy="-24.606299212598" rotation="90" />
+    <pcbpin number="5" name="MH2" style="c138.1_h85" originx="124.01574803149" originy="-24.606299212598" rotation="90" />
+    <line layer="TOP_ASSEMBLY" originx="-174.21259842519" originy="73.818897637794" endx="174.21259842519" endy="73.818897637794" width="7.8740157480314" />
+    <line layer="TOP_ASSEMBLY" originx="174.21259842519" originy="73.818897637794" endx="174.21259842519" endy="-44.291338582677" width="7.8740157480314" />
+    <line layer="TOP_ASSEMBLY" originx="174.21259842519" originy="-44.291338582677" endx="-174.21259842519" endy="-44.291338582677" width="7.8740157480314" />
+    <line layer="TOP_ASSEMBLY" originx="-174.21259842519" originy="-44.291338582677" endx="-174.21259842519" endy="73.818897637794" width="7.8740157480314" />
+    <line layer="TOP_PLACE_BOUND" originx="-213.58267716535" originy="238.18897637795" endx="213.58267716535" endy="238.18897637795" width="3.9370078740157" />
+    <line layer="TOP_PLACE_BOUND" originx="213.58267716535" originy="238.18897637795" endx="213.58267716535" endy="-162.40157480315" width="3.9370078740157" />
+    <line layer="TOP_PLACE_BOUND" originx="213.58267716535" originy="-162.40157480315" endx="-213.58267716535" endy="-162.40157480315" width="3.9370078740157" />
+    <line layer="TOP_PLACE_BOUND" originx="-213.58267716535" originy="-162.40157480315" endx="-213.58267716535" endy="238.18897637795" width="3.9370078740157" />
+    <line layer="TOP_ASSEMBLY" originx="-68.897637795275" originy="-44.291338582677" endx="-68.897637795275" endy="-123.03149606299" width="7.8740157480314" />
+    <line layer="TOP_ASSEMBLY" originx="-68.897637795275" originy="-123.03149606299" endx="-9.8425196850392" endy="-123.03149606299" width="7.8740157480314" />
+    <line layer="TOP_ASSEMBLY" originx="-9.8425196850392" originy="-123.03149606299" endx="-9.8425196850392" endy="-44.291338582677" width="7.8740157480314" />
+    <line layer="TOP_SILKSCREEN" originx="-157.48031496063" originy="73.818897637794" endx="-174.21259842519" endy="73.818897637794" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-174.21259842519" originy="73.818897637794" endx="-174.21259842519" endy="-44.291338582677" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-174.21259842519" originy="-44.291338582677" endx="-157.48031496063" endy="-44.291338582677" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="78.740157480314" originy="73.818897637794" endx="174.21259842519" endy="73.818897637794" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="174.21259842519" originy="73.818897637794" endx="174.21259842519" endy="-44.291338582677" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="174.21259842519" originy="-44.291338582677" endx="157.48031496063" endy="-44.291338582677" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-78.740157480314" originy="-44.291338582677" endx="78.740157480314" endy="-44.291338582677" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-68.897637795275" originy="-44.291338582677" endx="-68.897637795275" endy="-123.03149606299" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-68.897637795275" originy="-123.03149606299" endx="-9.8425196850392" endy="-123.03149606299" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-9.8425196850392" originy="-123.03149606299" endx="-9.8425196850392" endy="-44.291338582677" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-118.11023622047" originy="196.85039370078" endx="-118.11023622047" endy="196.85039370078" width="7.8740157480314" />
+    <arc layer="TOP_SILKSCREEN" originx="-120.07874015748" originy="196.85039370078" startangle=".0" sweepangle="180.0" radius="1.9685039370078" width="7.8740157480314" />
+    <line layer="TOP_SILKSCREEN" originx="-122.04724409449" originy="196.85039370078" endx="-122.04724409449" endy="196.85039370078" width="7.8740157480314" />
+    <arc layer="TOP_SILKSCREEN" originx="-120.07874015748" originy="196.85039370078" startangle="180.0" sweepangle="180.0" radius="1.9685039370078" width="7.8740157480314" />
+  </footprint>
+  <symbol name="CSS-1210TB" originx="0" originy="0">
+    <line originx="200" originy="100" endx="700" endy="100" width="0" />
+    <line originx="700" originy="-300" endx="700" endy="100" width="0" />
+    <line originx="700" originy="-300" endx="200" endy="-300" width="0" />
+    <line originx="200" originy="100" endx="200" endy="-300" width="0" />
+    <sympin number="1" originx="700" originy="0" rotation="0" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="670" originy="0" style="Default" rotation="0" justify="right" flipped="False" hidden="False" data="1" />
+      <text name="pindes" originx="760" originy="20" style="Default" rotation="0" justify="lowerleft" flipped="False" hidden="False" data="1" />
+    </sympin>
+    <sympin number="2" originx="700" originy="-100" rotation="0" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="670" originy="-100" style="Default" rotation="0" justify="right" flipped="False" hidden="False" data="2" />
+      <text name="pindes" originx="760" originy="-80" style="Default" rotation="0" justify="lowerleft" flipped="False" hidden="False" data="2" />
+    </sympin>
+    <sympin number="3" originx="700" originy="-200" rotation="0" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="670" originy="-200" style="Default" rotation="0" justify="right" flipped="False" hidden="False" data="3" />
+      <text name="pindes" originx="760" originy="-180" style="Default" rotation="0" justify="lowerleft" flipped="False" hidden="False" data="3" />
+    </sympin>
+    <sympin number="4" originx="200" originy="0" rotation="180" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="230" originy="0" style="Default" rotation="0" justify="left" flipped="False" hidden="False" data="MH1" />
+      <text name="pindes" originx="140" originy="20" style="Default" rotation="0" justify="lowerright" flipped="False" hidden="False" data="MH1" />
+    </sympin>
+    <sympin number="5" originx="200" originy="-100" rotation="180" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="230" originy="-100" style="Default" rotation="0" justify="left" flipped="False" hidden="False" data="MH2" />
+      <text name="pindes" originx="140" originy="-80" style="Default" rotation="0" justify="lowerright" flipped="False" hidden="False" data="MH2" />
+    </sympin>
+  </symbol>
+  <component name="CSS-1210TB" designatorprefix="S" height="82.67716535433" footprint="CSS1210TB">
+    <comppin designator="1" sympin="1" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="1" />
+    <comppin designator="2" sympin="2" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="2" />
+    <comppin designator="3" sympin="3" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="3" />
+    <comppin designator="MH1" sympin="4" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="MH1" />
+    <comppin designator="MH2" sympin="5" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="MH2" />
+    <attached_symbol gate="1" name="CSS-1210TB" />
+    <pinmap designator="1" footprintpin="1" />
+    <pinmap designator="2" footprintpin="2" />
+    <pinmap designator="3" footprintpin="3" />
+    <pinmap designator="MH1" footprintpin="4" />
+    <pinmap designator="MH2" footprintpin="5" />
+    <text name="Datasheet" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="https://www.nidec-copal-electronics.com/e/catalog/switch/css.pdf" />
+    <text name="Description" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="SWITCH SLIDE SPDT 100MA 12V" />
+    <text name="Mouser Part Number" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="229-CSS-1210TB" />
+    <text name="Mouser Price/Stock" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="https://www.mouser.co.uk/ProductDetail/Nidec-Components/CSS-1210TB?qs=XeJtXLiO41RuZ%252BgY2j5i0A%3D%3D" />
+    <text name="Manufacturer_Name" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="Nidec Copal" />
+    <text name="Manufacturer_Part_Number" originx="750" originy="200" style="Default" rotation="0" justify="left" flipped="False" hidden="False" data="CSS-1210TB" />
+  </component>
+</quadcept_library>

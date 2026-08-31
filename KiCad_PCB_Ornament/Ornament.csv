@@ -1,0 +1,26 @@
+Reference,Qty,Value,DNP,Exclude from BOM,Exclude from Board,Footprint,Datasheet
+BT1,1,Battery_Holder,,,,CustomLibrary:BatteryHolder_Keystone_2479_3xAAA-NoHoles,~
+C1,1,C10nF,,,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,~
+C3,1,C220uF or 470uF low-ESR Polymer or Tantalum,,,,Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder,~
+C4,1,C1nF,Optional (Current Sense),,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,~
+C5,1,C1uF,,,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,~
+D25,1,LED - RED,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,~
+"D26,D27,D28,D29,D30",5,LED - WHITE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
+"D3,D9,D14,D19,D24",5,LED - GREEN,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
+"D2,D8,D13,D18,D23",5,LED - BLUE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
+"D4,D6,D11,D15,D21",5,LED - CYAN,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
+"D1,D7,D12,D17,D22",5,LED - YELLOW,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
+"D5,D10,D16,D20",4,LED - ORANGE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
+H1,1,MountingHole,,Excluded from BOM,,MountingHole:MountingHole_2.2mm_M2_DIN965_Pad_TopBottom,~
+H2,1,QR Code (silkscreen),,Excluded from BOM,,CustomLibrary:15mmQR_cazabon_ornament,~
+"J1,J2",2,Conn_01x04_Pin,,,,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,~
+Q1,1,TEMT6200FX01,Optional (Light Sensor),,,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,https://www.rcscomponents.kiev.ua/datasheets/bpw40.pdf
+R1,1,R4.7k,,,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
+R2,1,R10k,Optional (Light Sensor),,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
+"R4,R5,R6,R7,R8,R9",6,R82,,,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
+R10,1,R1,R0 if no current sense,,,Resistor_SMD:R_1206_3216Metric,~
+"R11,R12",2,R100,Optional (Current Sense),,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
+SW1,1,SW_Push,,,,Button_Switch_SMD:SW_Push_1P1T_NO_E-Switch_TL3301NxxxxxG,~
+SW2,1,SW_SPDT,,,,Switch:CSS1210TB,~
+U1,1,"ATtiny414-SS (814,1614,424,824,1624,3224)",,,,Package_SO:SOIC-14_3.9x8.7mm_P1.27mm,http://ww1.microchip.com/downloads/en/DeviceDoc/40001912A.pdf
+U2,1,INA190A3IDDFR,Optional (Current Sense),,,Package_TO_SOT_SMD:SOT-23-8_Handsoldering,
