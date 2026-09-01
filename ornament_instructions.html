@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ornament Controller Instructions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #0056b3;
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+        .image-placeholder {
+            background-color: #e9ecef;
+            border: 1px dashed #adb5bd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-placeholder img {
+            max-width: 100%;
+            max-height: 150px;
+        }
+        .step {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .note {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Ornament Controller Instructions</h1>
+        <p>User Guide for the Custom LED Ornament</p>
+    </div>
+
+    <div class="step">
+        <h2>Turning the Ornament On</h2>
+        <p>1. Locate the power switch on the right-hand side of the ornament, on the underside of the branches.</p>
+        <p>2. Slide the switch to the "on" position.</p>
+        <p>3. The ornament will immediately begin operating in its default mode, alternating between "twinkling" and showing the advent calendar display.</p>
+        <div class="image-placeholder">
+            <div>Image: Power Switch Location</div>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>Setting the Date</h2>
+        <p>To get into setup mode:</p>
+        <ol>
+            <li>Press and hold the button for 3 seconds until all the LEDs turn off.</li>
+            <li>When you release the button, the LED for the current day will blink.</li>
+        </ol>
+        <p>To change the date:</p>
+        <ol>
+            <li>Click the button once to advance the date by one day/LED.</li>
+            <li>Continue clicking to cycle through the days of December (1-25).</li>
+        </ol>
+        <p>Once you're on the correct LED for the day of the month:</p>
+        <ul>
+            <li>Wait 10 seconds, or press and hold the button for 2 seconds to continue to brightness setting mode</li>
+        </ul>
+        <div class="image-placeholder">
+            <div>Image: Date Setting Interface</div>
+        </div>
+        <p class="note">Note: The date setting process is designed to be intuitive and requires only a few simple button presses.</p>
+    </div>
+
+    <div class="step">
+        <h2>Adjusting Brightness</h2>
+        <p>To adjust the brightness level:</p>
+        <ol>
+            <li>After setting the date, enter the brightness adjustment mode by pressing and holding the button for 2 seconds, or waiting 10 seconds as noted above.</li>
+            <li>One LED of each color will light up and start blinking at the current brightness setting.  Note that this is peak brightness - and LEDs will normally appear slightly dimmer during regular operation because they fade in and fade out.</li>
+            <li>Press the button to cycle through the various brightness levels:</li>
+            <ul>
+                <li><span class="highlight">10%</span> - Dim setting</li>
+                <li><span class="highlight">25%</span> - Low setting</li>
+                <li><span class="highlight">50%</span> - Medium setting (default)</li>
+                <li><span class="highlight">75%</span> - High setting</li>
+                <li><span class="highlight">100%</span> - Maximum brightness</li>
+            </ul>
+            <li>Once you're done, leave the ornament alone and it will save your settings after 10 seconds and return to normal operation.</li>
+        </ol>
+        <div class="image-placeholder">
+            <div>Image: Brightness Adjustment Interface</div>
+        </div>
+        <p class="note">Note: The date and brightness settings are saved to non-volatile memory, so they will persist after power-off.</p>
+    </div>
+
+    <div class="step">
+        <h2>Normal Operation</h2>
+        <p>The ornament operates in two distinct modes:</p>
+        
+        <h3>Twinkle Mode</h3>
+        <p>The ornament will always display a <span class="highlight">twinkling pattern</span> that cycles through different LED combinations for approximately 30 seconds.</p>
+        <div class="image-placeholder">
+            <div>Image: Twinkle Mode Animation</div>
+        </div>
+        
+        <h3>Advent Mode</h3>
+        <p>Every 30 seconds, the ornament enters <span class="highlight">Advent mode</span> where it displays a special pattern that progresses through the days of Advent:</p>
+        <ol>
+            <li>Each day, a new LED pattern appears</li>
+            <li>On the 25th day, it displays a special celebration pattern</li>
+        </ol>
+        <div class="image-placeholder">
+            <div>Image: Advent Mode Animation</div>
+        </div>
+        
+        <h3>Automatic Cycling and Sleep Mode</h3>
+        <p>The ornament will turn on and run for 5 hours when you turn the power switch on the first time. It will automatically go into sleep mode after 5 hours, and turn back on again 24-hours from when you first turned it on - so that it will run at the same time each day without any user action.</p>
+        <p>To have it start at a different time each day, simply turn the ornament off by the switch, and turn it on at the time you'd like it to normally turn on by itself.</p>
+    
+        <h3>Preview Mode</h3>
+        <p>When the ornament is in sleep mode (no LEDs showing), pressing the button once will activate the ornament for 1 hour.  This will not affect the normal auto-wake timing.</p>
+        <div class="image-placeholder">
+            <div>Image: Preview Mode Animation</div>
+        </div>
+        
+    </div>
+
+    <div class="step">
+        <h2>Troubleshooting</h2>
+        <p>If the ornament is not responding as expected:</p>
+        <ul>
+            <li>Ensure the batteries are fresh, or replace with new batteries</li>
+            <li>Try resetting the ornament by turning the power switch off and back on</li>
+            <li>Check that all connections are secure</li>
+            <li>For timing issues, make sure to turn the ornament off and back on at your desired daily start time</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Ornament Controller v0.1.15 | Custom Arduino ATTiny414 controlled LED display</p>
+        <p>For technical support, please contact the kevin@cazabon.com</p>
+    </div>
+</body>
+</html>

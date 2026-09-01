@@ -1,6 +1,9 @@
 // ============================================================================
-// Ornament Controller - Production Software (v0.1.15 - Custom LCG RNG)
-// Target Hardware: Microchip ATtiny414 (tinyAVR 1-Series)
+// Ornament Controller - Production Software (v0.1.2)
+// Target Hardware: Microchip ATtiny414/814/1614 (tinyAVR 1-Series)
+// This software is designed to control a 30-LED Charlieplexed display for an ornament, with various lighting effects and user interaction via a button.
+// Kevin Cazabon, 2026 kevin@cazabon.com / http://www.github.com/madcow4242/Arduino-Ornament 
+// Licensed under the MIT License (https://opensource.org/licenses/MIT)
 // ============================================================================
 #include <Arduino.h>
 #include <avr/io.h>
@@ -14,11 +17,11 @@
 #define MAX_GROUP_LEDS 4            
 #define NUM_GROUPS 3   
 
-#define TWINKLE_DUR_MS 24000
+#define TWINKLE_DUR_MS 30000
 #define ADVENT_RACE_STEP_MS 200     
 #define STAR_CHASE_STEP_MS 150      
 #define ADVENT_PULSE_SEC 6          
-#define RUNTIME_LIMIT_MS 18000000UL // 5 hours  // 86040000UL // 23.9 hours for testing
+#define RUNTIME_LIMIT_MS 18000000UL // 5 hours  // 86040000UL // 23.9 hours for testing  
 #define PREVIEW_LIMIT_MS 3600000UL  // 1 hour
 
 typedef struct { int8_t hi; int8_t lo; } LEDMap;
@@ -415,6 +418,7 @@ int main(void) {
             advent_single_round(current_advent_day);
         }
 
+        // After the runtime limit, increment the advent day unless it was set by the user
         if (!enter_date_set) {
             if (++current_advent_day > 25) current_advent_day = 1;
             eeprom_update_byte(&ee_advent_day, current_advent_day);
@@ -426,6 +430,7 @@ int main(void) {
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         
         while (1) {
+            // Sleep mode, monitoring button for preview mode
             _delay_ms(25);
             if (!(PORTB.IN & PIN2_bm)) {
                 uint32_t preview_start = millis();
@@ -445,6 +450,9 @@ int main(void) {
                 
                 if (enter_date_set) break; 
             } else {
+                if (run_start_ms + 86400000UL <= millis()) { // 24 hours
+                    break; // Exit sleep mode after 24 hours to start the next cycle
+                }
                 sleep_mode();
             }
         }
