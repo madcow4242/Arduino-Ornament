@@ -14,6 +14,8 @@ Contains all KiCad design files for the PCB:
 - Footprint files (.kicad_mod)
 - Exported fabrication files (.gbr, .drl)
 
+NOTE: the board design includes optional current monitoring circuit and light sensing circuit.  Neither of these are implemented in the production software, however they are fully functional and usable in the test software.  Those features can be ported to production as needed.
+
 ### 2. Production Software (`Ornament_production_1/`)
 The main firmware for the ornament controller:
 - Main Arduino sketch (`Ornament_production_1.ino`)
@@ -28,6 +30,7 @@ Code for testing and validating the PCB functionality:
 - Basic functionality tests
 - Hardware verification code
 - Software uses less than the ATTiny414's 4k of flash and 256 bytes of dynamic storage
+- Includes ADC control for current monitoring and light level measurement, if needed (not used in production code)
 
 ## Features
 
