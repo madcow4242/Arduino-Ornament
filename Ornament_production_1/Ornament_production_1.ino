@@ -1,5 +1,5 @@
 // ============================================================================
-// Ornament Controller - Production Software (v0.1.3)
+// Ornament Controller - Production Software (v0.1.5)
 // Target Hardware: Microchip ATtiny414/814/1614 (tinyAVR 1-Series)
 // This software is designed to control a 30-LED Charlieplexed display for an ornament, with various lighting effects and user interaction via a button.
 // Kevin Cazabon, 2026 kevin@cazabon.com / http://www.github.com/madcow4242/Arduino-Ornament 
@@ -34,11 +34,10 @@ EEMEM uint8_t ee_global_brightness = 50;
 
 volatile uint8_t enter_date_set = 0;
 static uint8_t global_brightness_level = 50;
-static uint8_t lcg_state = 42;
 
 static uint8_t rng_state = 42;
 
-static inline uint8_t fast_rand(void) {
+static uint8_t fast_rand(void) {
     rng_state ^= (uint8_t)millis(); // Inject live entropy from the system timer
     uint8_t x = rng_state;
     x ^= x << 3;
@@ -48,7 +47,7 @@ static inline uint8_t fast_rand(void) {
     return x;
 }
 
-static inline uint8_t scale_pwm_val(uint8_t lvl, uint8_t cal) {
+static uint8_t scale_pwm_val(uint8_t lvl, uint8_t cal) {
     uint16_t l = ((uint16_t)lvl * cal) / PWM_MAX;
     l = (l * global_brightness_level) / 50;
     if (l == 0 && lvl) l = 1;
@@ -380,9 +379,27 @@ brightness_phase:
     _delay_ms(250);
 }
 
+void rtc_init(void) {
+    while (RTC.STATUS > 0) { ; }
+    RTC.CLKSEL = RTC_CLKSEL_INT32K_gc; // Use internal 32.768kHz oscillator
+    RTC.PITCTRLA = RTC_PERIOD_CYC32768_gc | RTC_PITEN_bm; // 1-second interval + enable PIT
+}
+
+ISR(RTC_PIT_vect) {
+    RTC.PITINTFLAGS = RTC_PI_bm; // Clear the PIT interrupt flag
+}
+
+void execute_show(uint8_t day) {
+    check_button();
+    if (!enter_date_set) twinkle(TWINKLE_DUR_MS, day);
+    check_button();
+    if (!enter_date_set) advent_single_round(day);
+}
+
 int main(void) {
     _PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, 0x00);
     init();
+    rtc_init();
 
     PORTB.DIRSET = PIN3_bm; 
     PORTB.OUTSET = PIN3_bm; 
@@ -393,9 +410,8 @@ int main(void) {
 
     sei(); 
 
-    // Seed the custom LCG using low bits of the free-running millis counter
-    lcg_state ^= (uint8_t)millis();
-    if (lcg_state == 0) lcg_state = 42;
+    rng_state ^= (uint8_t)millis();
+    if (rng_state == 0) rng_state = 42;
 
     uint8_t current_advent_day = eeprom_read_byte(&ee_advent_day);
     if (current_advent_day < 1 || current_advent_day > 25) {
@@ -420,17 +436,11 @@ int main(void) {
 
         uint32_t run_start_ms = millis();
 
-        while (millis() - run_start_ms < RUNTIME_LIMIT_MS) {
-            check_button();
-            if (enter_date_set) break;
-            twinkle(TWINKLE_DUR_MS, current_advent_day); 
-            
-            check_button();
-            if (enter_date_set) break;
-            advent_single_round(current_advent_day);
+        // Main operational loop for the active period (5 hours)
+        while ((millis() - run_start_ms < RUNTIME_LIMIT_MS) && !enter_date_set) {
+            execute_show(current_advent_day);
         }
 
-        // After the runtime limit, increment the advent day unless it was set by the user
         if (!enter_date_set) {
             if (++current_advent_day > 25) current_advent_day = 1;
             eeprom_update_byte(&ee_advent_day, current_advent_day);
@@ -438,43 +448,39 @@ int main(void) {
             continue;
         }
 
+        // Enter sleep mode until the 24-hour cycle completes or button is pressed
         set_hardware_led(0);
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         
-        // Configure button as interrupt source for sleep mode
-        // Enable interrupt on button press (falling edge) 
-        PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc; // Pull-up with falling edge interrupt
+        uint32_t remaining_sleep_ms = 86400000UL - (millis() - run_start_ms);
+        RTC.PITINTCTRL = RTC_PI_bm; 
         
-        while (1) {
-            // Sleep mode, monitoring button for preview mode
-            sei(); // Enable global interrupts
-            sleep_mode(); // Enter sleep mode
+        while (remaining_sleep_ms > 0) {
+            sei(); 
+            sleep_mode(); 
             
-            // Wake up here when interrupt occurs or from sleep
             if (!(PORTB.IN & PIN2_bm)) {
-                // Button pressed - enter preview mode
+                RTC.PITINTCTRL = 0; 
                 uint32_t preview_start = millis();
-                while (millis() - preview_start < PREVIEW_LIMIT_MS) {
-                    check_button();
-                    if (enter_date_set) break;
-                    twinkle(TWINKLE_DUR_MS, current_advent_day);
-                    check_button();
-                    if (enter_date_set) break;
-                    advent_single_round(current_advent_day);
-                    if (enter_date_set) break;
+                while ((millis() - preview_start < PREVIEW_LIMIT_MS) && !enter_date_set) {
+                    execute_show(current_advent_day);
                 }
                 set_hardware_led(0);
-                
                 while (!(PORTB.IN & PIN2_bm));
                 _delay_ms(50);
                 
                 if (enter_date_set) break; 
+
+                remaining_sleep_ms = 86400000UL - (millis() - run_start_ms);
+                RTC.PITINTCTRL = RTC_PI_bm; 
             } else {
-                // Check if 24 hours have passed (for auto wake-up)
-                if (run_start_ms + 86400000UL <= millis()) { // 24 hours
-                    break; // Exit sleep mode after 24 hours to start the next cycle
+                if (remaining_sleep_ms > 1000) {
+                    remaining_sleep_ms -= 1000;
+                } else {
+                    remaining_sleep_ms = 0;
                 }
             }
         }
+        RTC.PITINTCTRL = 0;
     }
 }
