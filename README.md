@@ -1,6 +1,15 @@
 # Ornament Controller
 
-A custom LED ornament controller with advent calendar functionality, built using Arduino and KiCad.
+A custom LED ornament controller with advent calendar functionality, built using Arduino and KiCad.  This project can easily be adapted to other formats such as a badge by changing the PCB layout.  
+
+### Key features:
+- 30 individually-addressable LEDs
+- PWM LED control, with support for up to 12 (or more) simultaneous LEDs
+- Fade-in / Fade-out support
+- Advent calendar mode included
+- Light level measurement
+- Current measurement via a precision 1-ohm current sense resistor and precision amplified ADC circuit (intended to help optimize power usage prior to software finalization)
+- Optimized to fit within the 4k / 256 byte memory limitations of the ATTiny414, but is also compatible with larger variants such as the ATTiny 814/1614/824/1624/3224
 
 ## Project Structure
 
@@ -12,7 +21,7 @@ Contains all KiCad design files for the PCB:
 - PCB layout files (.kicad_pcb)
 - Component libraries (.lib, .dcm)
 - Footprint files (.kicad_mod)
-- Exported fabrication files (.gbr, .drl)
+- Exported fabrication files (.gbr, .drl) (for the example design / messaging)
 
 NOTE: the board design includes optional current monitoring circuit and light sensing circuit.  Neither of these are implemented in the production software, however they are fully functional and usable in the test software.  Those features can be ported to production as needed.
 
@@ -22,7 +31,7 @@ The main firmware for the ornament controller:
 - Configuration and constants
 - LED control algorithms
 - Date setting and brightness adjustment routines
-- Software fits in 3987 bytes of flash, and uses 68 bytes of dynamic storage
+- Software fits in under 4k of flash, and uses approx. 70 (of 256) bytes of dynamic storage
 
 ### 3. Test/Validation Software (`Ornament_test_1/`)
 Code for testing and validating the PCB functionality:
@@ -30,9 +39,9 @@ Code for testing and validating the PCB functionality:
 - Basic functionality tests
 - Hardware verification code
 - Software uses less than the ATTiny414's 4k of flash and 256 bytes of dynamic storage
-- Includes ADC control for current monitoring and light level measurement, if needed (not used in production code)
+- Includes ADC routines for current monitoring and light level measurement, if needed (not used in production code)
 
-## Features
+## Production Features
 
 - Advent calendar display (December 1-25)
 - Custom LED patterns with twinkling effects, including PWM fade-in, fade-out
@@ -47,13 +56,15 @@ Code for testing and validating the PCB functionality:
 - Custom PCB with LED matrix
 - Power switch and button for user interface
 - Battery or power supply for operation
+- Optional serial monitor to view diagnostic output on the UART connections (test software only by default)
 
 ## Getting Started
 
 1. Clone this repository
 2. Open the KiCad project to view or modify the PCB design
-3. Use the Arduino IDE to compile and upload the production firmware
+3. Use the Arduino IDE to compile and upload the production firmware to the completed PCB
 4. Test with the validation software to verify hardware functionality
+5. Modify and install the production software as desired
 
 ## License
 
@@ -62,6 +73,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Notes
 
 - Custom LCG (Linear Congruential Generator) for random number generation to save flash space
-- Charlieplexing technique for LED control - it uses 6 GPIOs to allow individual addressability for 30 LEDs.
+- Charlieplexing technique for LED control - it uses 6 GPIOs to allow individual addressability for up to 30 LEDs.
 - PWM LED control for up to 12 LEDs simultaneously, using 3x 32-step groups for each PWM cycle (4 LEDs per cycle)
 - (more LEDs can be controlled simultaneously via configuration, but will limit maximum LED brightness)

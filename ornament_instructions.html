@@ -41,10 +41,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
         .image-placeholder img {
             max-width: 100%;
-            max-height: 150px;
+            height: auto;
+            width: 300px;
+        }
+        .image-caption {
+            margin-top: 10px;
+            font-style: italic;
+            color: #6c757d;
+            font-size: 0.9em;
         }
         .step {
             background-color: white;
@@ -84,11 +92,13 @@
 
     <div class="step">
         <h2>Turning the Ornament On</h2>
-        <p>1. Locate the power switch on the right-hand side of the ornament, on the underside of the branches.</p>
-        <p>2. Slide the switch to the "on" position.</p>
-        <p>3. The ornament will immediately begin operating in its default mode, alternating between "twinkling" and showing the advent calendar display.</p>
+        <p>1. Install 3x AAA batteries in the battery holder on the back of the ornament - with the negative (flat) side facing the spring in each compartment.</p>
+        <p>2. Locate the power switch on the right-hand side of the ornament, on the underside of the branches.</p>
+        <p>3. Slide the switch to the "on" position.</p>
+        <p>4. The ornament will immediately begin operating in its default mode, alternating between "twinkling" and showing the advent calendar display.</p>
         <div class="image-placeholder">
-            <div>Image: Power Switch Location</div>
+            <img src="images/power.jpg" alt="Power Button Location" width="300" height="400">
+            <p class="image-caption">Figure 1: Power Button Location</p>
         </div>
     </div>
 
@@ -109,7 +119,8 @@
             <li>Wait 10 seconds, or press and hold the button for 2 seconds to continue to brightness setting mode</li>
         </ul>
         <div class="image-placeholder">
-            <div>Image: Date Setting Interface</div>
+            <img src="images/connections.jpg" alt="Date Setting Interface" width="300" height="400">
+            <p class="image-caption">Figure 2: Button for entering setup mode (advent day / brightness)</p>
         </div>
         <p class="note">Note: The date setting process is designed to be intuitive and requires only a few simple button presses.</p>
     </div>
@@ -131,7 +142,8 @@
             <li>Once you're done, leave the ornament alone and it will save your settings after 10 seconds and return to normal operation.</li>
         </ol>
         <div class="image-placeholder">
-            <div>Image: Brightness Adjustment Interface</div>
+            <img src="images/brightness.jpg" alt="Brightness Adjustment Interface" width="300" height="400">
+            <p class="image-caption">Figure 3: Brightness Adjustment Interface</p>
         </div>
         <p class="note">Note: The date and brightness settings are saved to non-volatile memory, so they will persist after power-off.</p>
     </div>
@@ -141,9 +153,10 @@
         <p>The ornament operates in two distinct modes:</p>
         
         <h3>Twinkle Mode</h3>
-        <p>The ornament will always display a <span class="highlight">twinkling pattern</span> that cycles through different LED combinations for approximately 30 seconds.</p>
+        <p>The ornament will always display a <span class="highlight">twinkling pattern</span> that cycles through different LED combinations for approximately 30 seconds, at the chosen brightness level.</p>
         <div class="image-placeholder">
-            <div>Image: Twinkle Mode Animation</div>
+            <img src="images/twinkle.jpg" alt="Twinkle Mode Animation" width="300" height="400">
+            <p class="image-caption">Figure 4: Twinkle Mode Animation</p>
         </div>
         
         <h3>Advent Mode</h3>
@@ -154,6 +167,8 @@
         </ol>
         <div class="image-placeholder">
             <div>Image: Advent Mode Animation</div>
+            <img src="images/adventmode.jpg" alt="Advent Day Setting Interface" width="300" height="400">
+            <p class="image-caption">Figure 3: Advent Day Setting Interface</p>
         </div>
         
         <h3>Automatic Cycling and Sleep Mode</h3>
@@ -162,9 +177,6 @@
     
         <h3>Preview Mode</h3>
         <p>When the ornament is in sleep mode (no LEDs showing), pressing the button once will activate the ornament for 1 hour.  This will not affect the normal auto-wake timing.</p>
-        <div class="image-placeholder">
-            <div>Image: Preview Mode Animation</div>
-        </div>
         
     </div>
 

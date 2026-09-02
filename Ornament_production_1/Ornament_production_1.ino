@@ -1,5 +1,5 @@
 // ============================================================================
-// Ornament Controller - Production Software (v0.1.2)
+// Ornament Controller - Production Software (v0.1.3)
 // Target Hardware: Microchip ATtiny414/814/1614 (tinyAVR 1-Series)
 // This software is designed to control a 30-LED Charlieplexed display for an ornament, with various lighting effects and user interaction via a button.
 // Kevin Cazabon, 2026 kevin@cazabon.com / http://www.github.com/madcow4242/Arduino-Ornament 
@@ -324,9 +324,20 @@ brightness_phase:
 
     while (millis() - inactivity_timer < 10000) {
         if (!(PORTB.IN & PIN2_bm)) {
-            while (!(PORTB.IN & PIN2_bm)); 
+            uint32_t press_press_time = millis();
+            while (!(PORTB.IN & PIN2_bm)) {
+                if (millis() - press_press_time >= 1000) {
+                    // Button held for 1+ second - save brightness and return to normal operation
+                    eeprom_update_byte(&ee_global_brightness, global_brightness_level);
+                    set_hardware_led(0);
+                    _delay_ms(300);
+                    enter_date_set = 0;
+                    return;
+                }
+            }
             _delay_ms(30);
             
+            // Button pressed briefly - cycle brightness level
             if (global_brightness_level == 10) global_brightness_level = 25;
             else if (global_brightness_level == 25) global_brightness_level = 50;
             else if (global_brightness_level == 50) global_brightness_level = 75;
@@ -362,6 +373,7 @@ brightness_phase:
         output_leds_common(counts);
     }
 
+    // Timeout - save brightness and return to normal operation
     eeprom_update_byte(&ee_global_brightness, global_brightness_level);
     set_hardware_led(0);
     enter_date_set = 0;
@@ -429,10 +441,18 @@ int main(void) {
         set_hardware_led(0);
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         
+        // Configure button as interrupt source for sleep mode
+        // Enable interrupt on button press (falling edge) 
+        PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc; // Pull-up with falling edge interrupt
+        
         while (1) {
             // Sleep mode, monitoring button for preview mode
-            _delay_ms(25);
+            sei(); // Enable global interrupts
+            sleep_mode(); // Enter sleep mode
+            
+            // Wake up here when interrupt occurs or from sleep
             if (!(PORTB.IN & PIN2_bm)) {
+                // Button pressed - enter preview mode
                 uint32_t preview_start = millis();
                 while (millis() - preview_start < PREVIEW_LIMIT_MS) {
                     check_button();
@@ -450,10 +470,10 @@ int main(void) {
                 
                 if (enter_date_set) break; 
             } else {
+                // Check if 24 hours have passed (for auto wake-up)
                 if (run_start_ms + 86400000UL <= millis()) { // 24 hours
                     break; // Exit sleep mode after 24 hours to start the next cycle
                 }
-                sleep_mode();
             }
         }
     }
