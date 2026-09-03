@@ -16,13 +16,15 @@
 #define GROUP_CYCLE_MS 1000
 #define MAX_GROUP_LEDS 4            
 #define NUM_GROUPS 3   
+         
+#define FULL_CYCLE_MS 86400000UL    // 24 hours
+#define RUNTIME_LIMIT_MS 18000000UL // 5 hours  // 86040000UL // 23.9 hours for testing  
+#define PREVIEW_LIMIT_MS 3600000UL  // 1 hour
 
 #define TWINKLE_DUR_MS 30000
 #define ADVENT_RACE_STEP_MS 200     
 #define STAR_CHASE_STEP_MS 150      
-#define ADVENT_PULSE_SEC 6          
-#define RUNTIME_LIMIT_MS 18000000UL // 5 hours  // 86040000UL // 23.9 hours for testing  
-#define PREVIEW_LIMIT_MS 3600000UL  // 1 hour
+#define ADVENT_PULSE_SEC 6 
 
 typedef struct { int8_t hi; int8_t lo; } LEDMap;
 typedef struct { uint8_t num; uint8_t level; } LEDPair;
@@ -401,10 +403,10 @@ int main(void) {
     init();
     rtc_init();
 
+    // Initial hardware setup
     PORTB.DIRSET = PIN3_bm; 
     PORTB.OUTSET = PIN3_bm; 
     PORTA.PIN3CTRL = PORT_ISC_INPUT_DISABLE_gc; 
-
     PORTB.DIRCLR = PIN2_bm;         
     PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc; 
 
@@ -434,6 +436,10 @@ int main(void) {
             continue;
         }
 
+        // Ensure LED power/drive lines are asserted at the start of active runs
+        PORTB.DIRSET = PIN3_bm; 
+        PORTB.OUTSET = PIN3_bm; 
+
         uint32_t run_start_ms = millis();
 
         // Main operational loop for the active period (5 hours)
@@ -452,7 +458,7 @@ int main(void) {
         set_hardware_led(0);
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         
-        uint32_t remaining_sleep_ms = 86400000UL - (millis() - run_start_ms);
+        uint32_t remaining_sleep_ms = FULL_CYCLE_MS - (millis() - run_start_ms);
         RTC.PITINTCTRL = RTC_PI_bm; 
         
         while (remaining_sleep_ms > 0) {
@@ -461,6 +467,11 @@ int main(void) {
             
             if (!(PORTB.IN & PIN2_bm)) {
                 RTC.PITINTCTRL = 0; 
+                
+                // Ensure drive lines are active for preview mode
+                PORTB.DIRSET = PIN3_bm; 
+                PORTB.OUTSET = PIN3_bm; 
+
                 uint32_t preview_start = millis();
                 while ((millis() - preview_start < PREVIEW_LIMIT_MS) && !enter_date_set) {
                     execute_show(current_advent_day);
@@ -471,7 +482,7 @@ int main(void) {
                 
                 if (enter_date_set) break; 
 
-                remaining_sleep_ms = 86400000UL - (millis() - run_start_ms);
+                remaining_sleep_ms = FULL_CYCLE_MS - (millis() - run_start_ms);
                 RTC.PITINTCTRL = RTC_PI_bm; 
             } else {
                 if (remaining_sleep_ms > 1000) {
