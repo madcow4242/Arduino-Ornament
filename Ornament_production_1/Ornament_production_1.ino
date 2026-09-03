@@ -50,7 +50,7 @@ static uint8_t fast_rand(void) {
 }
 
 static uint8_t scale_pwm_val(uint8_t lvl, uint8_t cal) {
-    uint16_t l = ((uint16_t)lvl * cal) / PWM_MAX;
+    uint16_t l = ((uint16_t)lvl * cal) >> 5; // Replaced / PWM_MAX with >> 5
     l = (l * global_brightness_level) / 50;
     if (l == 0 && lvl) l = 1;
     return l > PWM_MAX ? PWM_MAX : l;
@@ -113,11 +113,10 @@ uint8_t leds_share_pins(uint8_t led1, uint8_t led2) {
 
 uint8_t select_single_channel_leds(LEDPair channel_leds[MAX_GROUP_LEDS], uint8_t advent_day) {
     uint8_t count = 0, attempts = 0;
-    for (uint8_t i = 0; i < MAX_GROUP_LEDS; i++) channel_leds[i].num = 0;
 
     while (count < MAX_GROUP_LEDS && attempts < 25) {
-        uint8_t led = (fast_rand() % 30) + 1;
-        if (led == 25 && advent_day != 25) { attempts++; continue; }
+        uint8_t led = (fast_rand() & 0x1F) + 1; // Bitwise mask (0-31) instead of modulo division
+        if (led > 30 || (led == 25 && advent_day != 25)) { attempts++; continue; }
 
         uint8_t conflict = 0;
         for (uint8_t i = 0; i < count; i++) {
@@ -392,9 +391,7 @@ ISR(RTC_PIT_vect) {
 }
 
 void execute_show(uint8_t day) {
-    check_button();
-    if (!enter_date_set) twinkle(TWINKLE_DUR_MS, day);
-    check_button();
+    twinkle(TWINKLE_DUR_MS, day);
     if (!enter_date_set) advent_single_round(day);
 }
 
@@ -402,6 +399,16 @@ int main(void) {
     _PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, 0x00);
     init();
     rtc_init();
+
+    // CPU clock frequency - 8MHz internal oscillator is sufficient for our needs, and it saves power compared to higher frequencies.
+    _PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm); // Sets clock to 8 MHz (prescaler by 2 from 16MHz main oscillator)
+   
+    // Power optimization: disable unused ADC and floating input buffers
+    ADC0.CTRLA &= ~ADC_ENABLE_bm; 
+    PORTA.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc;
+    PORTA.PIN1CTRL = PORT_ISC_INPUT_DISABLE_gc;
+    PORTB.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc;
+    PORTB.PIN1CTRL = PORT_ISC_INPUT_DISABLE_gc;
 
     // Initial hardware setup
     PORTB.DIRSET = PIN3_bm; 
@@ -436,13 +443,11 @@ int main(void) {
             continue;
         }
 
-        // Ensure LED power/drive lines are asserted at the start of active runs
         PORTB.DIRSET = PIN3_bm; 
         PORTB.OUTSET = PIN3_bm; 
 
         uint32_t run_start_ms = millis();
 
-        // Main operational loop for the active period (5 hours)
         while ((millis() - run_start_ms < RUNTIME_LIMIT_MS) && !enter_date_set) {
             execute_show(current_advent_day);
         }
@@ -454,8 +459,9 @@ int main(void) {
             continue;
         }
 
-        // Enter sleep mode until the 24-hour cycle completes or button is pressed
+        // Enter deep sleep: shutdown LEDs, cut power rail, set power-down mode
         set_hardware_led(0);
+        PORTB.OUTCLR = PIN3_bm; // Cut power to external LED hardware
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         
         uint32_t remaining_sleep_ms = FULL_CYCLE_MS - (millis() - run_start_ms);
@@ -463,12 +469,12 @@ int main(void) {
         
         while (remaining_sleep_ms > 0) {
             sei(); 
-            sleep_mode(); 
+            sleep_mode(); // Wakes instantly on PIT 1s tick OR button press (falling edge)
             
             if (!(PORTB.IN & PIN2_bm)) {
                 RTC.PITINTCTRL = 0; 
                 
-                // Ensure drive lines are active for preview mode
+                // Restore LED power rail for preview mode
                 PORTB.DIRSET = PIN3_bm; 
                 PORTB.OUTSET = PIN3_bm; 
 
@@ -477,6 +483,7 @@ int main(void) {
                     execute_show(current_advent_day);
                 }
                 set_hardware_led(0);
+                PORTB.OUTCLR = PIN3_bm; // Cut power again if going back to sleep
                 while (!(PORTB.IN & PIN2_bm));
                 _delay_ms(50);
                 
