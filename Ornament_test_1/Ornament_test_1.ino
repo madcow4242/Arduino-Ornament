@@ -1,5 +1,5 @@
 // ============================================================================
-// Ornament Controller - Test and Calibration Routine (v0.6.2)
+// Ornament Controller - Test and Calibration Routine (v0.6.4)
 // Target Hardware: Microchip ATtiny414 (tinyAVR 1-Series)
 // ============================================================================
 
@@ -184,37 +184,71 @@ __attribute__((noinline)) uint8_t select_single_channel_leds(LEDPair channel_led
     return count;
 }
 
-uint16_t read_adc_raw(void) {
+// ============================================================================
+// UNIFIED ADC READING ROUTINE
+// Handles configuration, reference selection, pin mapping, stabilization, 
+// and raw conversion all in one place.
+// ============================================================================
+uint16_t read_adc_channel_raw(uint8_t mux_channel, uint16_t stabilization_delay_us) {
+    // 1. Disable ADC to safely reconfigure
+    ADC0.CTRLA = 0;
+    
+    // 2. Configure 4.34V internal reference and clock prescaler
+    VREF.CTRLA = VREF_ADC0REFSEL_4V34_gc;    
+    ADC0.CTRLC = ADC_PRESC_DIV16_gc | ADC_REFSEL_INTREF_gc;  
+    
+    // 3. Enable ADC
+    ADC0.CTRLA = ADC_ENABLE_bm;            
+    
+    // 4. Configure requested MUX channel and ensure input buffer control
+    if (mux_channel == ADC_MUXPOS_AIN10_gc) {
+        PORTB.PIN1CTRL &= ~PORT_ISC_gm;
+        PORTB.PIN1CTRL |= PORT_ISC_INPUT_DISABLE_gc;
+        PORTB.DIRCLR = PIN1_bm; 
+    } else if (mux_channel == ADC_MUXPOS_AIN1_gc) {
+        PORTA.PIN3CTRL &= ~PORT_ISC_gm;
+        PORTA.PIN3CTRL |= PORT_ISC_INPUT_DISABLE_gc;
+        PORTA.DIRCLR = PIN3_bm; 
+    }
+    
+    ADC0.MUXPOS = mux_channel;      
+    
+    // 5. Wait for user-configurable stabilization time
+    if (stabilization_delay_us > 0) {
+        delayMicroseconds(stabilization_delay_us);
+    }
+    
+    // 6. Perform conversion
     ADC0.INTFLAGS = ADC_RESRDY_bm;
     ADC0.COMMAND = ADC_STCONV_bm;
     while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
     return ADC0.RES;
 }
 
+// ============================================================================
+// SPECIALIZED MEASUREMENT WRAPPERS
+// ============================================================================
 uint16_t measure_current_x10(void) {
     if (!ENABLE_CSA_READINGS) return 0;
-    PORTB.OUTSET = PIN0_bm; 
-    _delay_us(100);
-    ADC0.CTRLC = ADC_PRESC_DIV16_gc | ADC_REFSEL_VDDREF_gc;
-    _delay_us(50);
-    ADC0.MUXPOS = ADC_MUXPOS_AIN2_gc;  
-    _delay_us(20);
-    uint16_t raw = read_adc_raw();
-    PORTB.OUTCLR = PIN0_bm; 
-    VREF.CTRLA = VREF_ADC0REFSEL_2V5_gc;
-    return (uint16_t)(((uint32_t)raw * 244UL) / 100UL);
+    
+    // Read AIN10 (PB1) with a 100us stabilization delay
+    uint16_t raw = read_adc_channel_raw(ADC_MUXPOS_AIN10_gc, 100);
+    
+    // Convert raw ADC counts to current in 0.1mA units (x10) using 4.34V scale factor
+    return (uint16_t)(((uint32_t)raw * 434UL) / 1024UL);
 }
 
 uint8_t measure_light_sensor(void) {
+    // Enable light sensor power pin
     PORTB.OUTSET = PIN0_bm; 
-    _delay_us(100);
-    ADC0.CTRLC = ADC_PRESC_DIV16_gc | ADC_REFSEL_VDDREF_gc;
-    _delay_us(50);
-    ADC0.MUXPOS = ADC_MUXPOS_AIN1_gc;
-    _delay_us(20);
-    uint16_t raw = read_adc_raw();
+    
+    // Read AIN1 (PA1/PB1 depending on board, using AIN1 here) with a 100us stabilization delay
+    uint16_t raw = read_adc_channel_raw(ADC_MUXPOS_AIN1_gc, 100);
+    
+    // Disable light sensor power pin
     PORTB.OUTCLR = PIN0_bm; 
-    VREF.CTRLA = VREF_ADC0REFSEL_2V5_gc;
+    
+    // Convert raw value to percentage
     return (uint8_t)((raw * 100UL) / 1023);
 }
 
@@ -248,12 +282,15 @@ void drive_multi_group_pwm(const LEDPair groups[NUM_GROUPS][MAX_GROUP_LEDS], con
 }
 
 void mode_0_test() {
-    uart_print_P(PSTR("Mode 0 - Current Test\r\n"));
+    uart_print_P(PSTR("Mode 0 - Current Test (Raw Diagnostics Enabled)\r\n"));
     for (uint8_t n = 1; n <= 30; n++) {
         if (mode_changed) break; 
         set_hardware_led(0); 
-        _delay_ms(MODE0_ON_TIME_MS); 
-        uint16_t base_cur = measure_current_x10();
+        _delay_ms(500); // Wait for full stabilization before baseline measurement
+        
+        // Capture raw ADC count directly for debugging baseline voltage
+        uint16_t base_raw = read_adc_channel_raw(ADC_MUXPOS_AIN10_gc, 100);
+        uint16_t base_cur = (uint16_t)(((uint32_t)base_raw * 434UL) / 1024UL);
         
         // Measure current and light level while sensor power (PIN0) is active
         uint16_t sensor_cur = 0;
@@ -261,58 +298,135 @@ void mode_0_test() {
         if (ENABLE_CSA_READINGS) {
             PORTB.OUTSET = PIN0_bm; 
             _delay_us(100);
-            ADC0.CTRLC = ADC_PRESC_DIV16_gc | ADC_REFSEL_VDDREF_gc;
-            _delay_us(50);
-            ADC0.MUXPOS = ADC_MUXPOS_AIN2_gc;  
-            _delay_us(20);
-            uint16_t raw_cur = read_adc_raw();
-            sensor_cur = (uint16_t)(((uint32_t)raw_cur * 244UL) / 100UL);
-
-            ADC0.MUXPOS = ADC_MUXPOS_AIN1_gc;
-            _delay_us(20);
-            uint16_t raw_light = read_adc_raw();
-            light_level = (uint8_t)((raw_light * 100UL) / 1023);
             
+            uint16_t raw_cur = read_adc_channel_raw(ADC_MUXPOS_AIN2_gc, 50);
+            sensor_cur = (uint16_t)(((uint32_t)raw_cur * 434UL) / 1024UL);
+
+            light_level = measure_light_sensor(); 
             PORTB.OUTCLR = PIN0_bm; 
-            VREF.CTRLA = VREF_ADC0REFSEL_2V5_gc;
         } else {
             light_level = measure_light_sensor();
         }
 
         set_hardware_led(n);                                    
-        _delay_ms(MODE0_ON_TIME_MS);                             
-        uint16_t full_cur = measure_current_x10();
-        int16_t full_delta = full_cur - base_cur;
+        _delay_ms(1000); // Longer stabilization time for LED measurement
+        
+        // Capture raw ADC count for full LED load
+        uint16_t full_raw = read_adc_channel_raw(ADC_MUXPOS_AIN10_gc, 100);
+        uint16_t full_cur = (uint16_t)(((uint32_t)full_raw * 434UL) / 1024UL);
+        
+        int16_t full_delta = (int16_t)full_cur - (int16_t)base_cur;
         if (full_delta < 0) full_delta = 0;
 
         uint8_t cal_val = get_cal_val(n - 1);
-        uint16_t pwm_cur = ((uint32_t)full_cur * scale_pwm_val(cal_val, cal_val)) / PWM_MAX;
+        uint16_t pwm_cur = ((uint32_t)full_cur * scale_pwm_val(PWM_MAX, cal_val)) / PWM_MAX;
         int16_t pwm_delta = (int16_t)pwm_cur - (int16_t)base_cur;
         if (pwm_delta < 0) pwm_delta = 0;
         
         set_hardware_led(0);
-        _delay_ms(50);
+        _delay_ms(500); 
 
         LEDPair groups[NUM_GROUPS][MAX_GROUP_LEDS] = {{{n, scale_pwm_val(cal_val, cal_val)}}};
         uint8_t counts[NUM_GROUPS] = {1, 0, 0};
         drive_multi_group_pwm(groups, counts, 300);
 
+        // Print formatted output including RAW ADC counts and mV for verification
         uart_print_P(PSTR("D"));
         uart_print_uint(n);
-        uart_print_P(PSTR(" Base: "));
+        uart_print_P(PSTR(" | Base Raw: "));
+        uart_print_uint(base_raw);
+        uart_print_P(PSTR(" ("));
         uart_print_current_1dp(base_cur);
-        uart_print_P(PSTR("mA | Full: "));
-        uart_print_current_1dp((uint16_t)full_delta);
-        uart_print_P(PSTR("mA | PWM: "));
-        uart_print_current_1dp((uint16_t)pwm_delta);
-        uart_print_P(PSTR("mA | Light: "));
+        uart_print_P(PSTR("mA) | Full Raw: "));
+        uart_print_uint(full_raw);
+        uart_print_P(PSTR(" ("));
+        uart_print_current_1dp(full_cur);
+        uart_print_P(PSTR("mA) | Light: "));
         uart_print_uint(light_level);
-        uart_print_P(PSTR("% "));
-        uart_print_current_1dp(sensor_cur);
-        uart_print_P(PSTR("mA\r\n"));
+        uart_print_P(PSTR("%\r\n"));
 
         _delay_ms(MODE0_OFF_TIME_MS);
     }
+}
+
+void calibrate_stabilization_times() {
+    uart_print_P(PSTR("Calibration: Stabilization Times\r\n"));
+    
+    uart_print_P(PSTR("System check - measuring baseline with no LEDs or external power\r\n"));
+    set_hardware_led(0);
+    _delay_ms(2000); 
+    
+    uint32_t baseline_sum = 0;
+    uint8_t baseline_count = 10;
+    for (uint8_t i = 0; i < baseline_count; i++) {
+        baseline_sum += measure_current_x10();
+        _delay_ms(100); 
+    }
+    uint16_t system_baseline = baseline_sum / baseline_count;
+    
+    uart_print_P(PSTR("System baseline current: "));
+    uart_print_current_1dp(system_baseline);
+    uart_print_P(PSTR("mA (avg of "));
+    uart_print_uint(baseline_count);
+    uart_print_P(PSTR(" readings)\r\n"));
+    
+    if (system_baseline > 200) { 
+        uart_print_P(PSTR("WARNING: System baseline is unexpectedly high! Check power supply and connections.\r\n"));
+        uart_print_P(PSTR("Proceeding with LED tests anyway, but results may be affected.\r\n"));
+    }
+    
+    const uint8_t test_leds[] = {2,3,6,9,17,24,25};
+    uint8_t num_test_leds = sizeof(test_leds) / sizeof(test_leds[0]);
+    
+    for (uint8_t led_idx = 0; led_idx < num_test_leds; led_idx++) {
+        uint8_t test_led = test_leds[led_idx];
+        
+        uart_print_P(PSTR("Testing LED "));
+        uart_print_uint(test_led);
+        uart_print_P(PSTR("\r\n"));
+        
+        uint32_t baseline_sum = 0;
+        uint8_t baseline_count = 5;
+        for (uint8_t i = 0; i < baseline_count; i++) {
+            set_hardware_led(0);
+            _delay_ms(1000); 
+            baseline_sum += measure_current_x10();
+            _delay_ms(50); 
+        }
+        uint16_t base_current = baseline_sum / baseline_count;
+        
+        uart_print_P(PSTR("  Baseline current: "));
+        uart_print_current_1dp(base_current);
+        uart_print_P(PSTR("mA (avg of "));
+        uart_print_uint(baseline_count);
+        uart_print_P(PSTR(" readings)\r\n"));
+        
+        set_hardware_led(test_led);
+        _delay_ms(500); 
+        uint16_t current_500ms = measure_current_x10();
+        uart_print_P(PSTR("  After 500ms: "));
+        uart_print_current_1dp(current_500ms);
+        uart_print_P(PSTR("mA\r\n"));
+        
+        _delay_ms(500); 
+        uint16_t current_1000ms = measure_current_x10();
+        uart_print_P(PSTR("  After 1000ms: "));
+        uart_print_current_1dp(current_1000ms);
+        uart_print_P(PSTR("mA\r\n"));
+        
+        _delay_ms(500); 
+        uint16_t current_1500ms = measure_current_x10();
+        uart_print_P(PSTR("  After 1500ms: "));
+        uart_print_current_1dp(current_1500ms);
+        uart_print_P(PSTR("mA\r\n"));
+        
+        set_hardware_led(0);
+        _delay_ms(500); 
+        
+        uart_print_P(PSTR("  Test complete\r\n"));
+    }
+    
+    uart_print_P(PSTR("Stabilization test complete\r\n"));
 }
 
 void mode_1_calibration() {
@@ -340,86 +454,6 @@ void mode_1_calibration() {
     }
 }
 
-void mode_2_rolling_undulate() {
-    uart_print_P(PSTR("Mode 2 - Rolling Undulate\r\n"));
-    
-    LEDPair groups[NUM_GROUPS][MAX_GROUP_LEDS];
-    uint8_t group_counts[NUM_GROUPS] = {0};
-    uint32_t group_start_times[NUM_GROUPS];
-    
-    uint32_t now = millis();
-
-    for (uint8_t g = 0; g < NUM_GROUPS; g++) {
-        group_counts[g] = select_single_channel_leds(groups[g], 0);
-        if (group_counts[g] == 0) group_counts[g] = 1;
-        group_start_times[g] = now - ((uint32_t)g * (GROUP_CYCLE_MS / NUM_GROUPS));
-    }
-    
-    mode_changed = 0;
-
-    while (!mode_changed) {
-        now = millis();
-        
-        LEDPair active_groups[NUM_GROUPS][MAX_GROUP_LEDS];
-        uint8_t active_counts[NUM_GROUPS];
-
-        for (uint8_t g = 0; g < NUM_GROUPS; g++) {
-            uint32_t elapsed = now - group_start_times[g];
-
-            if (elapsed >= GROUP_CYCLE_MS) {
-                group_start_times[g] += GROUP_CYCLE_MS;
-                elapsed = now - group_start_times[g]; 
-
-                group_counts[g] = select_single_channel_leds(groups[g], 0);
-                if (group_counts[g] == 0) group_counts[g] = 1;
-            }
-
-            uint32_t progress_permille = (elapsed * 1000) / GROUP_CYCLE_MS;
-            if (progress_permille > 1000) progress_permille = 1000; 
-
-            uint32_t current_pwm_level = 0;
-            if (progress_permille <= 500) {
-                current_pwm_level = (progress_permille * PWM_MAX) / 500;
-            } else {
-                uint32_t down_progress = progress_permille - 500;
-                current_pwm_level = PWM_MAX - ((down_progress * PWM_MAX) / 500);
-            }
-
-            active_counts[g] = group_counts[g];
-            for (uint8_t i = 0; i < group_counts[g]; i++) {
-                uint8_t max_cal = get_cal_val(groups[g][i].num - 1);
-                active_groups[g][i].num = groups[g][i].num;
-                active_groups[g][i].level = scale_pwm_val(current_pwm_level, max_cal);
-            }
-        }
-
-        uint32_t frame_start = millis();
-        while ((millis() - frame_start) < 5) {
-            if (mode_changed) break;
-            for (uint8_t g = 0; g < NUM_GROUPS; g++) {
-                uint8_t count = active_counts[g];
-                uint8_t total_active_units = 0;
-                for (uint8_t i = 0; i < count; i++) {
-                    if (active_groups[g][i].level > 0 && active_groups[g][i].num >= 1 && active_groups[g][i].num <= 30) {
-                        total_active_units += active_groups[g][i].level;
-                    }
-                }
-                uint8_t off_units = (total_active_units < PWM_MAX) ? (PWM_MAX - total_active_units) : 0;
-
-                for (uint8_t i = 0; i < count; i++) {
-                    uint8_t lvl = active_groups[g][i].level;
-                    if (lvl > 0 && active_groups[g][i].num >= 1 && active_groups[g][i].num <= 30) {
-                        set_hardware_led(active_groups[g][i].num);
-                        for (uint8_t l = 0; l < lvl; l++) _delay_us(20);
-                    }
-                }
-                set_hardware_led(0);
-                for (uint8_t l = 0; l < off_units; l++) _delay_us(20);
-            }
-        }
-    }
-}
-
 int main(void) {
     _PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, 0x00);
     init();
@@ -428,21 +462,12 @@ int main(void) {
     PORTB.OUTSET = PIN3_bm; 
     PORTB.OUTCLR = PIN0_bm; 
 
-    PORTB.PIN1CTRL = PORT_ISC_INPUT_DISABLE_gc; 
-    PORTA.PIN3CTRL = PORT_ISC_INPUT_DISABLE_gc; 
-
-    VREF.CTRLA = VREF_ADC0REFSEL_2V5_gc;    
-    ADC0.CTRLC = ADC_PRESC_DIV16_gc;         
-    ADC0.CTRLA = ADC_ENABLE_bm;             
-
     PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc; 
 
+    // Seed random generator using an initial light sensor read via our unified routine
     PORTB.OUTSET = PIN0_bm;
-    _delay_us(100);
-    ADC0.MUXPOS = ADC_MUXPOS_AIN1_gc;
-    ADC0.COMMAND = ADC_STCONV_bm;
-    while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
-    srand(ADC0.RES);
+    uint16_t seed_raw = read_adc_channel_raw(ADC_MUXPOS_AIN1_gc, 100);
+    srand(seed_raw);
     PORTB.OUTCLR = PIN0_bm;
 
     sei(); 
@@ -451,6 +476,6 @@ int main(void) {
         mode_changed = 0; 
         if (current_mode == 0) mode_0_test();
         else if (current_mode == 1) mode_1_calibration();
-        else if (current_mode == 2) mode_2_rolling_undulate();
+        else if (current_mode == 2) calibrate_stabilization_times();
     }
 }

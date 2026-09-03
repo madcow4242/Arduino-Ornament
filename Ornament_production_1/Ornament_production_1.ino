@@ -17,14 +17,14 @@
 #define MAX_GROUP_LEDS 4            
 #define NUM_GROUPS 3   
          
-#define FULL_CYCLE_MS 86400000UL    // 24 hours
-#define RUNTIME_LIMIT_MS 18000000UL // 5 hours  // 86040000UL // 23.9 hours for testing  
-#define PREVIEW_LIMIT_MS 3600000UL  // 1 hour
+#define FULL_CYCLE_MS    86400000UL     // 24 hours
+#define RUNTIME_LIMIT_MS 18000000UL     // 5 hours    
+#define PREVIEW_LIMIT_MS 3600000UL      // 1 hour
 
-#define TWINKLE_DUR_MS 30000
+#define TWINKLE_DUR_MS      30000
 #define ADVENT_RACE_STEP_MS 200     
-#define STAR_CHASE_STEP_MS 150      
-#define ADVENT_PULSE_SEC 6 
+#define STAR_CHASE_STEP_MS  150      
+#define ADVENT_PULSE_MS     6000
 
 typedef struct { int8_t hi; int8_t lo; } LEDMap;
 typedef struct { uint8_t num; uint8_t level; } LEDPair;
@@ -70,6 +70,7 @@ const LEDMap charlie_map[30] PROGMEM = {
     {5,0}, {0,5}, {4,0}, {0,4}, {3,0}, {0,3}, {2,0}, {0,2}, {1,0}, {0,1}  
 };
 
+// Button press interrupt service routine - triggered on falling edge of button pin (PB2)
 ISR(PORTB_PORT_vect) {
     PORTB.INTFLAGS = PIN2_bm;
 }
@@ -113,8 +114,11 @@ uint8_t leds_share_pins(uint8_t led1, uint8_t led2) {
 
 uint8_t select_single_channel_leds(LEDPair channel_leds[MAX_GROUP_LEDS], uint8_t advent_day) {
     uint8_t count = 0, attempts = 0;
+    
+    // Bitwise mask avoids division routines entirely (assuming MAX_GROUP_LEDS is a power of 2)
+    uint8_t target = (fast_rand() & (MAX_GROUP_LEDS - 1)) + 1;
 
-    while (count < MAX_GROUP_LEDS && attempts < 25) {
+    while (count < target && attempts < 25) {
         uint8_t led = (fast_rand() & 0x1F) + 1; // Bitwise mask (0-31) instead of modulo division
         if (led > 30 || (led == 25 && advent_day != 25)) { attempts++; continue; }
 
@@ -242,7 +246,7 @@ void advent_single_round(uint8_t advent_day) {
     }
 
     uint32_t phase2_start = millis();
-    while ((millis() - phase2_start) < ((uint32_t)ADVENT_PULSE_SEC * 1000) && !enter_date_set) {
+    while ((millis() - phase2_start) < ((uint32_t)ADVENT_PULSE_MS) && !enter_date_set) {
         check_button(); 
         if (enter_date_set) return;
 
@@ -386,6 +390,7 @@ void rtc_init(void) {
     RTC.PITCTRLA = RTC_PERIOD_CYC32768_gc | RTC_PITEN_bm; // 1-second interval + enable PIT
 }
 
+// Interrupt Service Routine for the RTC Periodic Interrupt Timer (PIT) (sleep mode)
 ISR(RTC_PIT_vect) {
     RTC.PITINTFLAGS = RTC_PI_bm; // Clear the PIT interrupt flag
 }
@@ -417,6 +422,7 @@ int main(void) {
     PORTB.DIRCLR = PIN2_bm;         
     PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc; 
 
+    // enable interrupts for button press detection
     sei(); 
 
     rng_state ^= (uint8_t)millis();
@@ -436,6 +442,7 @@ int main(void) {
         eeprom_update_byte(&ee_global_brightness, global_brightness_level);
     }
 
+    // Main loop: continuously check for button presses, execute the show, and manage sleep cycles
     while (1) {
         check_button();
         if (enter_date_set) {
@@ -458,7 +465,7 @@ int main(void) {
         } else {
             continue;
         }
-
+        
         // Enter deep sleep: shutdown LEDs, cut power rail, set power-down mode
         set_hardware_led(0);
         PORTB.OUTCLR = PIN3_bm; // Cut power to external LED hardware
@@ -467,8 +474,8 @@ int main(void) {
         uint32_t remaining_sleep_ms = FULL_CYCLE_MS - (millis() - run_start_ms);
         RTC.PITINTCTRL = RTC_PI_bm; 
         
+        // Sleep loop: wait for either the RTC PIT interrupt (1s tick) or a button press to wake up
         while (remaining_sleep_ms > 0) {
-            sei(); 
             sleep_mode(); // Wakes instantly on PIT 1s tick OR button press (falling edge)
             
             if (!(PORTB.IN & PIN2_bm)) {

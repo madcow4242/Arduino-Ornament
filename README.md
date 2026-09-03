@@ -10,6 +10,8 @@ A custom LED ornament controller with advent calendar functionality, built using
 - Light level measurement
 - Current measurement via a precision 1-ohm current sense resistor and precision amplified ADC circuit (intended to help optimize power usage prior to software finalization)
 - Optimized to fit within the 4k / 256 byte memory limitations of the ATTiny414, but is also compatible with larger variants such as the ATTiny 814/1614/824/1624/3224
+- Production software is configured to run at 8MHz to optimize power usage (instead of default 20MHz) - this can be changed if higher PWM frequency is desired, for example.  (test software still runs at 20MHz)
+- Est. ~30 days run time on one set of 3x AAA batteries, using default Production software (5 hours/day on, with auto timer).  Can be run on other power sources like CR2032 for shorter durations.
 
 ## Project Structure
 
@@ -23,7 +25,9 @@ Contains all KiCad design files for the PCB:
 - Footprint files (.kicad_mod)
 - Exported fabrication files (.gbr, .drl) (for the example design / messaging)
 
-NOTE: the board design includes optional current monitoring circuit and light sensing circuit.  Neither of these are implemented in the production software, however they are fully functional and usable in the test software.  Those features can be ported to production as needed.
+The PCB layout can be easily customized with your own text, or into a different physical format or size (like a badge) using KiCad - however if modifying the layout you'll have to re-route the board as well of course.  I chose to put the control electronics on the front of the board (to be geeky), but they could easily be moved to the back to clean up the appearance.
+
+NOTE: the board design includes optional current monitoring circuit and light sensing circuit.  Neither of these are implemented in the production software, however they are fully functional and usable in the test software.  Those features can be ported to production as needed, or removed or unpopulated on the PCB.
 
 ### 2. Production Software (`Ornament_production_1/`)
 The main firmware for the ornament controller:
