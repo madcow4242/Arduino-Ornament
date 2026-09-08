@@ -1,26 +1,29 @@
-Reference,Qty,Value,DNP,Exclude from BOM,Exclude from Board,Footprint,Datasheet
-BT1,1,Battery_Holder,,,,CustomLibrary:BatteryHolder_Keystone_2479_3xAAA-NoHoles,~
-C1,1,C10nF,,,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,~
-C3,1,C220uF or 470uF low-ESR Polymer or Tantalum,,,,Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder,~
-C4,1,C1nF,Optional (Current Sense),,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,~
-C5,1,C1uF,,,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,~
-D25,1,LED - RED,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,~
-"D26,D27,D28,D29,D30",5,LED - WHITE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
-"D3,D9,D14,D19,D24",5,LED - GREEN,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
-"D2,D8,D13,D18,D23",5,LED - BLUE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
-"D4,D6,D11,D15,D21",5,LED - CYAN,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
-"D1,D7,D12,D17,D22",5,LED - YELLOW,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
-"D5,D10,D16,D20",4,LED - ORANGE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,
-H1,1,MountingHole,,Excluded from BOM,,MountingHole:MountingHole_2.2mm_M2_DIN965_Pad_TopBottom,~
-H2,1,QR Code (silkscreen),,Excluded from BOM,,CustomLibrary:15mmQR_cazabon_ornament,~
-"J1,J2",2,Conn_01x04_Pin,,,,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,~
-Q1,1,TEMT6200FX01,Optional (Light Sensor),,,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,https://www.rcscomponents.kiev.ua/datasheets/bpw40.pdf
-R1,1,R4.7k,,,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
-R2,1,R10k,Optional (Light Sensor),,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
-"R4,R5,R6,R7,R8,R9",6,R82,,,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
-R10,1,R1,R0 if no current sense,,,Resistor_SMD:R_1206_3216Metric,~
-"R11,R12",2,R100,Optional (Current Sense),,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,~
-SW1,1,SW_Push,,,,Button_Switch_SMD:SW_Push_1P1T_NO_E-Switch_TL3301NxxxxxG,~
-SW2,1,SW_SPDT,,,,Switch:CSS1210TB,~
-U1,1,"ATtiny414-SS (814,1614,424,824,1624,3224)",,,,Package_SO:SOIC-14_3.9x8.7mm_P1.27mm,http://ww1.microchip.com/downloads/en/DeviceDoc/40001912A.pdf
-U2,1,INA190A3IDDFR,Optional (Current Sense),,,Package_TO_SOT_SMD:SOT-23-8_Handsoldering,
+Reference,Qty,Value,DNP,Exclude from BOM,Exclude from Board,Footprint,Datasheet,Mouser link,$ qty 1,$ qty 25,$ qty 100
+BT1,1,Battery_Holder,,,,CustomLibrary:BatteryHolder_Keystone_2479_3xAAA-NoHoles,https://www.mouser.com/datasheet/3/201/1/2479.pdf,https://www.mouser.com/en/ProductDetail/Keystone-Electronics/2479?qs=Q3RoVmURDomBPD85HfXZoA%3D%3D&countryCode=US&currencyCode=USD,1.8,1.6,1.58
+C1,1,C10nF,,,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/72/1/C0603F103K9RACTU.pdf,https://www.mouser.com/en/ProductDetail/KEMET/C0603F103K9RACTU?qs=6avfeC6zeS4aPXDpR2QexA%3D%3D,0.17,0.102,0.062
+C3,1,C220uF or 470uF low-ESR Polymer or Tantalum,,,,Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder,https://www.mouser.com/datasheet/3/5926/1/TCJ.pdf,https://www.mouser.com/en/ProductDetail/KYOCERA-AVX/TCJB227M004R0060?qs=ZICBS%2FMUCuXjn%2FZ7A%252B%252BpdQ%3D%3D&countryCode=US&currencyCode=USD,1.44,1,0.74
+C4,1,C1nF,Optional (Current Sense),,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,https://datasheets.kyocera-avx.com/AutoMLCC.pdf,https://www.mouser.com/en/ProductDetail/KYOCERA-AVX/06031F102K4T2A?qs=%252BdQmOuGyFcFZxL9GWikwcQ%3D%3D,0.14,0.079,0.048
+C5,1,C1uF,,,,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,https://ds.yuden.co.jp/TYCOMPAS/ut/download?pn=MSASE168SB5105KTNA01&fileType=CS,https://www.mouser.com/en/ProductDetail/TAIYO-YUDEN/MSASG168SB5105KTNA01?qs=yc9RBI4tIALTzUyUX1jaSQ%3D%3D,0.17,0.073,0.042
+D25,1,LED - RED,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/308/1/APG1608SURKC_T.pdf,https://www.mouser.com/en/ProductDetail/Kingbright/APG1608SURKC-T?qs=uxmOeTEqoPxGH1cbvEL84g%3D%3D&countryCode=US&currencyCode=USD,0.23,0.155,0.109
+"D26,D27,D28,D29,D30",5,LED - WHITE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/5912/1/LW_Q38G_EN.pdf,https://www.mouser.com/en/ProductDetail/ams-OSRAM/LW-Q38G-Q2OO-3K5L-1?qs=74fRo9GAWsz9EOAyjjeb8g%3D%3D&countryCode=US&currencyCode=USD,0.58,0.35,0.139
+"D3,D9,D14,D19,D24",5,LED - GREEN,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/308/1/APG1608CGKC_T.pdf,https://www.mouser.com/en/ProductDetail/Kingbright/APG1608CGKC-T?qs=uxmOeTEqoPwOMdoDiWi4nA%3D%3D&countryCode=US&currencyCode=USD,0.23,0.155,0.109
+"D2,D8,D13,D18,D23",5,LED - BLUE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/308/1/APTD1608LVBC_D.pdf,https://www.mouser.com/en/ProductDetail/Kingbright/APTD1608LVBC-D?qs=6oMev5NRZMEfNSg5xIhlKA%3D%3D&countryCode=US&currencyCode=USD,0.58,0.408,0.294
+"D4,D6,D11,D15,D21",5,LED - CYAN,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/308/1/APT1608VRCXF_A_5MAV.pdf,https://www.mouser.com/en/ProductDetail/Kingbright/APT1608VRCXF-A-5MAV?qs=xhbEVWpZdWce9Oiwfj8Zmw%3D%3D&countryCode=US&currencyCode=USD,0.72,0.499,0.363
+"D1,D7,D12,D17,D22",5,LED - YELLOW,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/308/1/APG1608SYKC_T.pdf,https://www.mouser.com/en/ProductDetail/Kingbright/APG1608SYKC-T?qs=uxmOeTEqoPwi1baBMiknXw%3D%3D&countryCode=US&currencyCode=USD,0.23,0.155,0.109
+"D5,D10,D16,D20",4,LED - ORANGE,,,,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/308/1/APG1608SEKC_T.pdf,https://www.mouser.com/en/ProductDetail/Kingbright/APG1608SEKC-T?qs=uxmOeTEqoPwx3LhwGJN5Vg%3D%3D&countryCode=US&currencyCode=USD,0.23,0.155,0.109
+H1,1,MountingHole,,Excluded from BOM,,MountingHole:MountingHole_2.2mm_M2_DIN965_Pad_TopBottom,N/A,N/A,,,
+H2,1,QR Code (silkscreen),,Excluded from BOM,,CustomLibrary:15mmQR_cazabon_ornament,N/A,N/A,,,
+"J1,J2",2,Conn_01x04_Pin,,,,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,https://cdn.amphenol-cs.com/media/wysiwyg/files/drawing/68000.pdf,https://www.mouser.com/en/ProductDetail/Amphenol-FCI/68004-404HLF?qs=iiM6sTJtPEeXIoTTLP40zg%3D%3D,0.29,0.216,0.188
+Q1,1,TEMT6200FX01,Optional (Light Sensor),,,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,https://www.rcscomponents.kiev.ua/datasheets/bpw40.pdf,https://www.mouser.com/en/ProductDetail/Vishay-Semiconductors/TEMT6200FX01?qs=%2Fjqivxn91cdDbKNzRLtBUw%3D%3D&countryCode=US&currencyCode=USD,0.76,0.643,0.614
+R1,1,R4.7k,,,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/508/1/PYu-RP_51_RoHS_L_3.pdf,https://www.mouser.com/en/ProductDetail/YAGEO/RP0603FRE074K7L?qs=Y0Uzf4wQF3kHfBhD8kHClQ%3D%3D,0.1,0.049,0.047
+R2,1,R10k,Optional (Light Sensor),,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/72/1/PYU_RT_1_TO_0_01_ROHS_L.pdf,https://www.mouser.com/en/ProductDetail/YAGEO/RT0402FRE1310KL?qs=8%252Br4Hz5Xir%2FZUB0dNArFaA%3D%3D&countryCode=US&currencyCode=USD,0.1,0.013,0.012
+"R4,R5,R6,R7,R8,R9",6,R82,,,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/72/1/PYU_RT_1_TO_0_01_ROHS_L.pdf,https://www.mouser.com/en/ProductDetail/YAGEO/RT0603BRD0782RL?qs=%2Ff7pOCXLR5eRsjR2nYqoNw%3D%3D,0.1,0.06,0.056
+R10,1,R1,R0 if no current sense,,,Resistor_SMD:R_1206_3216Metric,https://www.koaspeer.com/pdfs/SR73.pdf,https://www.mouser.com/en/ProductDetail/KOA-Speer/SR732BTTD1R00D?qs=37cpYFfNToFkOPypDElszA%3D%3D&countryCode=US&currencyCode=USD,0.53,0.228,0.205
+"R11,R12",2,R100,Optional (Current Sense),,,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,https://www.mouser.com/datasheet/3/508/1/PYU_RP_51_ROHS_L.pdf,https://www.mouser.com/en/ProductDetail/YAGEO/RP0603FRE07100RL?qs=Y0Uzf4wQF3lM9ZFwqInEig%3D%3D,0.1,0.049,0.047
+SW1,1,SW_Push,,,,Button_Switch_SMD:SW_Push_1P1T_NO_E-Switch_TL3301NxxxxxG,https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1977223&DocType=Customer%20Drawing&DocLang=English&DocFormat=pdf&PartCntxt=2-1977223-2,https://www.mouser.com/en/ProductDetail/TE-Connectivity-PB/1571563-6?qs=kSbAZawwBnzmioGrnhYP0w%3D%3D&countryCode=US&currencyCode=USD,0.51,0.456,0.405
+SW2,1,SW_SPDT,,,,Switch:CSS1210TB,https://www.nidec-copal-electronics.com/e/catalog/switch/css.pdf,https://www.mouser.com/en/ProductDetail/Nidec-Components/CSS-1210TB?qs=XeJtXLiO41RuZ%252BgY2j5i0A%3D%3D&countryCode=US&currencyCode=USD,0.72,0.577,0.515
+U1,1,"ATtiny414-SS (814,1614,424,824,1624,3224)",,,,Package_SO:SOIC-14_3.9x8.7mm_P1.27mm,http://ww1.microchip.com/downloads/en/DeviceDoc/40001912A.pdf,https://www.mouser.com/en/ProductDetail/Microchip-Technology/ATTINY414-SSF?qs=3HJ2avRr9PJM%252BHyoiaJnKA%3D%3D&countryCode=US&currencyCode=USD,0.68,0.62,0.619
+U2,1,INA190A3IDDFR,Optional (Current Sense),,,Package_TO_SOT_SMD:SOT-23-8_Handsoldering,https://www.ti.com/lit/gpn/ina190,https://www.mouser.com/en/ProductDetail/Texas-Instruments/INA190A3IDDFR?qs=wnTfsH77Xs4uZMxkZ%2F%2Fl%2Fw%3D%3D&countryCode=US&currencyCode=USD,2.34,1.59,1.42
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,BOM Cost,24.92,,
