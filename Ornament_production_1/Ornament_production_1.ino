@@ -1,5 +1,5 @@
 // ============================================================================
-// Ornament Controller - Production Software (v0.1.5)
+// Ornament Controller - Production Software (v0.1.6)
 // Target Hardware: Microchip ATtiny414/814/1614 (tinyAVR 1-Series)
 // This software is designed to control a 30-LED Charlieplexed display for an ornament, with various lighting effects and user interaction via a button.
 // Kevin Cazabon, 2026 kevin@cazabon.com / http://www.github.com/madcow4242/Arduino-Ornament 
@@ -50,7 +50,7 @@ static uint8_t fast_rand(void) {
 }
 
 static uint8_t scale_pwm_val(uint8_t lvl, uint8_t cal) {
-    uint16_t l = ((uint16_t)lvl * cal) >> 5; // Replaced / PWM_MAX with >> 5
+    uint16_t l = ((uint16_t)lvl * cal) >> 5; 
     l = (l * global_brightness_level) / 50;
     if (l == 0 && lvl) l = 1;
     return l > PWM_MAX ? PWM_MAX : l;
@@ -116,12 +116,10 @@ uint8_t leds_share_pins(uint8_t led1, uint8_t led2) {
 
 uint8_t select_single_channel_leds(LEDPair channel_leds[MAX_GROUP_LEDS], uint8_t advent_day) {
     uint8_t count = 0, attempts = 0;
-    
-    // Bitwise mask avoids division routines entirely (assuming MAX_GROUP_LEDS is a power of 2)
     uint8_t target = (fast_rand() & (MAX_GROUP_LEDS - 1)) + 1;
 
     while (count < target && attempts < 25) {
-        uint8_t led = (fast_rand() & 0x1F) + 1; // Bitwise mask (0-31) instead of modulo division
+        uint8_t led = (fast_rand() & 0x1F) + 1;
         if (led > 30 || (led == 25 && advent_day != 25)) { attempts++; continue; }
 
         uint8_t conflict = 0;
@@ -171,29 +169,47 @@ void output_leds_common(const uint8_t active_counts[NUM_GROUPS]) {
 
 void twinkle(uint32_t duration_ms, uint8_t advent_day) {
     static LEDPair base_groups[NUM_GROUPS][MAX_GROUP_LEDS];
-    uint8_t group_counts[NUM_GROUPS];
+    uint8_t group_counts[NUM_GROUPS] = {0};
     uint32_t group_start_times[NUM_GROUPS];
     uint32_t start_time = millis();
-    uint32_t now = start_time;
+    uint32_t stagger = GROUP_CYCLE_MS / NUM_GROUPS;
 
     for (uint8_t g = 0; g < NUM_GROUPS; g++) {
-        group_counts[g] = select_single_channel_leds(base_groups[g], advent_day);
-        if (group_counts[g] == 0) group_counts[g] = 1;
-        group_start_times[g] = now - ((uint32_t)g * (GROUP_CYCLE_MS / NUM_GROUPS));
+        group_start_times[g] = start_time + (g * stagger);
     }
     
-    while (!enter_date_set && (millis() - start_time < duration_ms)) {
+    while (!enter_date_set) {
+        uint32_t now = millis();
+        if ((now - start_time >= duration_ms)) {
+            uint8_t active_total = 0;
+            for (uint8_t g = 0; g < NUM_GROUPS; g++) {
+                if (group_counts[g] > 0 && (now - group_start_times[g] < GROUP_CYCLE_MS)) {
+                    active_total++;
+                }
+            }
+            if (active_total == 0) break;
+        }
+
         check_button(); 
         if (enter_date_set) return;
 
-        now = millis();
-        uint8_t active_counts[NUM_GROUPS];
+        uint8_t active_counts[NUM_GROUPS] = {0};
 
         for (uint8_t g = 0; g < NUM_GROUPS; g++) {
+            if (now < group_start_times[g]) continue;
+
             uint32_t elapsed = now - group_start_times[g];
             if (elapsed >= GROUP_CYCLE_MS) {
-                group_start_times[g] += GROUP_CYCLE_MS;
-                elapsed = now - group_start_times[g]; 
+                if (now - start_time < duration_ms) {
+                    group_start_times[g] += GROUP_CYCLE_MS;
+                    elapsed = now - group_start_times[g];
+                    group_counts[g] = select_single_channel_leds(base_groups[g], advent_day);
+                    if (group_counts[g] == 0) group_counts[g] = 1;
+                } else {
+                    group_counts[g] = 0;
+                    continue;
+                }
+            } else if (group_counts[g] == 0) {
                 group_counts[g] = select_single_channel_leds(base_groups[g], advent_day);
                 if (group_counts[g] == 0) group_counts[g] = 1;
             }
@@ -284,7 +300,6 @@ void handle_date_setting(uint8_t* current_day) {
     while (!(PORTB.IN & PIN2_bm));
     _delay_ms(50); 
 
-    // Phase 1: Set Advent Day
     inactivity_timer = blink_timer = millis(); 
     while (millis() - inactivity_timer < 10000) {
         if (!(PORTB.IN & PIN2_bm)) {
@@ -313,7 +328,6 @@ save_day:
     set_hardware_led(0);
     _delay_ms(300);
 
-    // Phase 2: Set Global Brightness
     inactivity_timer = blink_timer = millis();
     led_state = 1;
 
