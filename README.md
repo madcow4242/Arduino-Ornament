@@ -2,6 +2,8 @@
 
 A custom LED Christmas ornament with advent calendar functionality, built using Arduino and KiCad.  This project can easily be adapted to other formats such as a badge by changing the PCB layout.  
 
+<img src="images/twinkle.jpg" alt="Example Ornament" width=200 height=300 align="center">
+
 ### Key features:
 - 30 individually-addressable LEDs
 - PWM LED control, with support for up to 12 (or more) simultaneous LEDs
@@ -12,7 +14,7 @@ A custom LED Christmas ornament with advent calendar functionality, built using 
 - Current measurement via a precision 1-ohm current sense resistor and precision amplified ADC circuit (intended to help optimize power usage prior to software finalization) (optional)
 - Optimized to fit within the 4k / 256 byte memory limitations of the ATTiny414, but is also compatible with larger variants such as the ATTiny 814/1614/824/1624/3224
 - Production software is configured to run at 8MHz to optimize power usage (instead of default 20MHz) - this can be changed if higher PWM frequency is desired, for example.  (test software still runs at 20MHz)
-- Est. ~30 days run time on one set of 3x AAA batteries, using default Production software (5 hours/day on, with auto timer).  Can be run on other power sources like CR2032 for shorter durations.
+- \>30 days run time on one set of 3x AAA batteries, using default Production software (5 hours/day on, with auto timer).  Can be run on other 3-5VDC power sources like CR2032 for shorter durations (however, \>3.5V is required for 2.8V LEDs or higher - so stick with ~2.2V LEDs or lower if using 3-3.3V power sources).
 
 ## Project Structure
 
