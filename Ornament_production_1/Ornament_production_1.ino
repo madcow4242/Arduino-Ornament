@@ -70,6 +70,8 @@ const LEDMap charlie_map[30] PROGMEM = {
     {5,0}, {0,5}, {4,0}, {0,4}, {3,0}, {0,3}, {2,0}, {0,2}, {1,0}, {0,1}  
 };
 
+const uint8_t brightness_preview_leds[] PROGMEM = {3, 25, 4, 18, 10, 7, 26};
+
 // Button press interrupt service routine - triggered on falling edge of button pin (PB2)
 ISR(PORTB_PORT_vect) {
     PORTB.INTFLAGS = PIN2_bm;
@@ -276,37 +278,27 @@ void advent_single_round(uint8_t advent_day) {
 
 void handle_date_setting(uint8_t* current_day) {
     enter_date_set = 0;
-    uint32_t inactivity_timer = millis();
-    uint32_t blink_timer = millis();
+    uint32_t inactivity_timer, blink_timer;
     uint8_t led_state = 1;
 
     while (!(PORTB.IN & PIN2_bm));
     _delay_ms(50); 
-    inactivity_timer = millis(); 
 
+    // Phase 1: Set Advent Day
+    inactivity_timer = blink_timer = millis(); 
     while (millis() - inactivity_timer < 10000) {
         if (!(PORTB.IN & PIN2_bm)) {
-            uint32_t press_press_time = millis();
+            uint32_t press_time = millis();
             while (!(PORTB.IN & PIN2_bm)) {
-                if (millis() - press_press_time >= 1000) {
-                    eeprom_update_byte(&ee_advent_day, *current_day);
-                    set_hardware_led(0);
-                    _delay_ms(300);
-                    goto brightness_phase;
-                }
+                if (millis() - press_time >= 1000) goto save_day;
             }
             _delay_ms(30); 
             if (++(*current_day) > 25) *current_day = 1;
-            inactivity_timer = millis(); 
-            blink_timer = millis();
+            inactivity_timer = blink_timer = millis(); 
             led_state = 1;
             _delay_ms(50);
         }
-
-        if (millis() - blink_timer >= 300) {
-            led_state = !led_state;
-            blink_timer = millis();
-        }
+        if (millis() - blink_timer >= 300) { led_state = !led_state; blink_timer = millis(); }
 
         uint8_t counts[NUM_GROUPS] = {0, 0, 0};
         if (led_state) {
@@ -316,68 +308,50 @@ void handle_date_setting(uint8_t* current_day) {
         }
         output_leds_common(counts);
     }
-    
+save_day:
     eeprom_update_byte(&ee_advent_day, *current_day);
     set_hardware_led(0);
     _delay_ms(300);
 
-brightness_phase:
-    inactivity_timer = millis();
-    blink_timer = millis();
+    // Phase 2: Set Global Brightness
+    inactivity_timer = blink_timer = millis();
     led_state = 1;
 
     while (millis() - inactivity_timer < 10000) {
         if (!(PORTB.IN & PIN2_bm)) {
-            uint32_t press_press_time = millis();
+            uint32_t press_time = millis();
             while (!(PORTB.IN & PIN2_bm)) {
-                if (millis() - press_press_time >= 1000) {
-                    // Button held for 1+ second - save brightness and return to normal operation
-                    eeprom_update_byte(&ee_global_brightness, global_brightness_level);
-                    set_hardware_led(0);
-                    _delay_ms(300);
-                    enter_date_set = 0;
-                    return;
-                }
+                if (millis() - press_time >= 1000) goto save_brightness;
             }
             _delay_ms(30);
             
-            // Button pressed briefly - cycle brightness level
-            if (global_brightness_level == 10) global_brightness_level = 25;
-            else if (global_brightness_level == 25) global_brightness_level = 50;
-            else if (global_brightness_level == 50) global_brightness_level = 75;
-            else if (global_brightness_level == 75) global_brightness_level = 100;
-            else global_brightness_level = 10;
+            global_brightness_level = (global_brightness_level >= 100) ? 10 : global_brightness_level + 25;
+            if (global_brightness_level == 35) global_brightness_level = 50; 
 
-            inactivity_timer = millis();
-            blink_timer = millis();
+            inactivity_timer = blink_timer = millis();
             led_state = 1;
             _delay_ms(50);
         }
-
-        if (millis() - blink_timer >= 300) {
-            led_state = !led_state;
-            blink_timer = millis();
-        }
+        if (millis() - blink_timer >= 300) { led_state = !led_state; blink_timer = millis(); }
 
         uint8_t counts[NUM_GROUPS] = {0, 0, 0};
         if (led_state) {
-            groups[0][0].num = 3;   groups[0][0].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[2]));
-            groups[0][1].num = 25;  groups[0][1].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[24]));
-            groups[0][2].num = 4;   groups[0][2].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[3]));
-            groups[0][3].num = 18;  groups[0][3].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[17]));
-            counts[0] = 4;
-
-            groups[1][0].num = 10;  groups[1][0].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[9]));
-            groups[1][1].num = 7;   groups[1][1].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[6]));
-            groups[1][2].num = 26;  groups[1][2].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[25]));
-            counts[1] = 3;
-            
-            counts[2] = 0;
+            for (uint8_t i = 0; i < 4; i++) {
+                uint8_t led = pgm_read_byte(&brightness_preview_leds[i]);
+                groups[0][i].num = led;
+                groups[0][i].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[led - 1]));
+            }
+            for (uint8_t i = 0; i < 3; i++) {
+                uint8_t led = pgm_read_byte(&brightness_preview_leds[4 + i]);
+                groups[1][i].num = led;
+                groups[1][i].level = scale_pwm_val(PWM_MAX, pgm_read_byte(&calibration_table[led - 1]));
+            }
+            counts[0] = 4; counts[1] = 3; counts[2] = 0;
         }
         output_leds_common(counts);
     }
 
-    // Timeout - save brightness and return to normal operation
+save_brightness:
     eeprom_update_byte(&ee_global_brightness, global_brightness_level);
     set_hardware_led(0);
     enter_date_set = 0;
@@ -386,13 +360,12 @@ brightness_phase:
 
 void rtc_init(void) {
     while (RTC.STATUS > 0) { ; }
-    RTC.CLKSEL = RTC_CLKSEL_INT32K_gc; // Use internal 32.768kHz oscillator
-    RTC.PITCTRLA = RTC_PERIOD_CYC32768_gc | RTC_PITEN_bm; // 1-second interval + enable PIT
+    RTC.CLKSEL = RTC_CLKSEL_INT32K_gc; 
+    RTC.PITCTRLA = RTC_PERIOD_CYC32768_gc | RTC_PITEN_bm; 
 }
 
-// Interrupt Service Routine for the RTC Periodic Interrupt Timer (PIT) (sleep mode)
 ISR(RTC_PIT_vect) {
-    RTC.PITINTFLAGS = RTC_PI_bm; // Clear the PIT interrupt flag
+    RTC.PITINTFLAGS = RTC_PI_bm; 
 }
 
 void execute_show(uint8_t day) {
@@ -405,24 +378,20 @@ int main(void) {
     init();
     rtc_init();
 
-    // CPU clock frequency - 8MHz internal oscillator is sufficient for our needs, and it saves power compared to higher frequencies.
-    _PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm); // Sets clock to 8 MHz (prescaler by 2 from 16MHz main oscillator)
+    _PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm); 
    
-    // Power optimization: disable unused ADC and floating input buffers
     ADC0.CTRLA &= ~ADC_ENABLE_bm; 
     PORTA.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc;
     PORTA.PIN1CTRL = PORT_ISC_INPUT_DISABLE_gc;
     PORTB.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc;
     PORTB.PIN1CTRL = PORT_ISC_INPUT_DISABLE_gc;
 
-    // Initial hardware setup
     PORTB.DIRSET = PIN3_bm; 
     PORTB.OUTSET = PIN3_bm; 
     PORTA.PIN3CTRL = PORT_ISC_INPUT_DISABLE_gc; 
     PORTB.DIRCLR = PIN2_bm;         
     PORTB.PIN2CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc; 
 
-    // enable interrupts for button press detection
     sei(); 
 
     rng_state ^= (uint8_t)millis();
@@ -442,7 +411,6 @@ int main(void) {
         eeprom_update_byte(&ee_global_brightness, global_brightness_level);
     }
 
-    // Main loop: continuously check for button presses, execute the show, and manage sleep cycles
     while (1) {
         check_button();
         if (enter_date_set) {
@@ -466,22 +434,19 @@ int main(void) {
             continue;
         }
         
-        // Enter deep sleep: shutdown LEDs, cut power rail, set power-down mode
         set_hardware_led(0);
-        PORTB.OUTCLR = PIN3_bm; // Cut power to external LED hardware
+        PORTB.OUTCLR = PIN3_bm; 
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         
         uint32_t remaining_sleep_ms = FULL_CYCLE_MS - (millis() - run_start_ms);
         RTC.PITINTCTRL = RTC_PI_bm; 
         
-        // Sleep loop: wait for either the RTC PIT interrupt (1s tick) or a button press to wake up
         while (remaining_sleep_ms > 0) {
-            sleep_mode(); // Wakes instantly on PIT 1s tick OR button press (falling edge)
+            sleep_mode(); 
             
             if (!(PORTB.IN & PIN2_bm)) {
                 RTC.PITINTCTRL = 0; 
                 
-                // Restore LED power rail for preview mode
                 PORTB.DIRSET = PIN3_bm; 
                 PORTB.OUTSET = PIN3_bm; 
 
@@ -490,7 +455,7 @@ int main(void) {
                     execute_show(current_advent_day);
                 }
                 set_hardware_led(0);
-                PORTB.OUTCLR = PIN3_bm; // Cut power again if going back to sleep
+                PORTB.OUTCLR = PIN3_bm; 
                 while (!(PORTB.IN & PIN2_bm));
                 _delay_ms(50);
                 
