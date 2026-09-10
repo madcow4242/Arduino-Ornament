@@ -2,8 +2,8 @@
 // Ornament Controller - Production Software (v0.1.6)
 // Target Hardware: Microchip ATtiny414/814/1614 (tinyAVR 1-Series)
 // This software is designed to control a 30-LED Charlieplexed display for an ornament, with various lighting effects and user interaction via a button.
-// Kevin Cazabon, 2026 kevin@cazabon.com / http://www.github.com/madcow4242/Arduino-Ornament 
-// Licensed under the MIT License (https://opensource.org/licenses/MIT)
+// (C) Kevin Cazabon, 2026 kevin@cazabon.com / http://www.github.com/madcow4242/Arduino-Ornament 
+// Licensed under the MIT License (https://opensource.org/licenses/MIT) - contact kevin@cazabon.com for more information or commercial licensing.
 // ============================================================================
 #include <Arduino.h>
 #include <avr/io.h>
